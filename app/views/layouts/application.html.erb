@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--Railsでは、app/views/layouts/application.html.erbに共通となるHTML（erb含む）を記述することができる。-->
 <html>
   <head>
     <title><%= full_title(yield(:title)) %></title>
@@ -8,12 +9,14 @@
     <%= render 'layouts/shim' %>
   </head>
   <body>
+    <!--この<body>タグ内に、各ファイルの<header>タグ部分のコードを追加している。-->
     <%= render 'layouts/header' %>
     <div class="container">
       <% flash.each do |message_type, msg| %>
         <div class="alert alert-<%= message_type %>"><%= msg.html_safe %></div>
       <% end %>
-      <%= yield %>
+      <%= yield %> <!--ここに各ビューファイルの中身が代入される。-->
+      <!--< %= yield %>の部分にビューファイルの内容が代入された上でページが表示される仕組みになっている。-->
       <%= debug(params) if Rails.env.development? %>
     </div>
   </body>

@@ -10,6 +10,8 @@ class UsersController < ApplicationController
 
   def index
     @users = if params[:search]
+      #ビューで使う変数はアクション内に定義する。変数に「＠」が付いている事にも意味がある。def [アクション名] ... endの間に変数を定義することができる
+      #Railsでは、変数名を「@」から始めることでその変数を「インスタンス変数」として定義することが出来る。そしてこのインスタンス変数をビューで使用することができる。「＠」をつけない場合、その変数はローカル変数となり、ビューで変数を使おうとしてもスコープ（変数が使える範囲）から外れてしまい使用することが出来ない。
       #searchされた場合は、原文+.where('name LIKE ?', "%#{params[:search]}%")を実行
       User.paginate(page: params[:page]).where('name LIKE ?', "%#{params[:search]}%")
     else
