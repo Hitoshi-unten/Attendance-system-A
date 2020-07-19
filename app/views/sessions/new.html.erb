@@ -3,6 +3,8 @@
 
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
+    <!--Railsのform_tagメソッドを用いることで、入力フォームの投稿内容を送信することができる。
+　　次のような記述で送信先を指定することが可能。URL、またはパスを指定する。doとendを忘れないように注意する。-->
     <%= form_with(scope: :session, url: login_path, local: true) do |f| %>
 
       <%= f.label :email, "メールアドレス", class: "label-login" %>

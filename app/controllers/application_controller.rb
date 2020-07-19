@@ -6,7 +6,11 @@ class ApplicationController < ActionController::Base
 
   # beforフィルター
   
-  # paramsハッシュからユーザーを取得します。
+  # paramsハッシュからユーザーを取得します。    
+    # findメソッドは引数にidの値となる数値を指定することで、その値を持つデータを取得することができる。
+    # @userインスタンス変数に値を代入することで、ビューでもidの値を使用することができる。
+    # {id: }というハッシュがparams変数に入っているので、このような記述で「」を取得することができる。
+
   def set_user
     @user = User.find(params[:id])
   end
@@ -55,7 +59,7 @@ class ApplicationController < ActionController::Base
     end
 
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
+    flash[:danger] = "ページ情報の取得に失敗し���した、再アクセスしてください。"
     redirect_to root_url
   end
 end
