@@ -6,29 +6,32 @@ class UsersController < ApplicationController
   before_action :admin_or_correct_user, only: [:show, :update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :show
   #before_action :limitation_login_user, only: [:new, :create, :login_page, :login]
-  
+  #before_action :メソッド名〜と記述することで、全てのアクションが実行される直前に、ここで指定したアクションが実行されることとなる。
+  #set_userを指定しているのでbefore_actionメソッドは同じコントローラ内にあるset_userを実行するという流れ。
+  #その結果、全アクションでまずは #@current_userを定義しようとし、@current_userが存在すればログイン状態、nilならログアウト状態ということがわかるようになります。
+  #onlyオプションで実行したいアクションのみ記述することができる。
 
-  def index
+  def index #(一覧画面)
     @users = if params[:search]
-      #ビューで使う変数はアクション内に定義する。変数に「＠」が付いている事にも意味がある。def [アクション名] ... endの間に変数を定義することができる
-      #Railsでは、変数名を「@」から始めることでその変数を「インスタンス変数」として定義することが出来る。そしてこのインスタンス変数をビューで使用することができる。「＠」をつけない場合、その変数はローカル変数となり、ビューで変数を使おうとしてもスコープ（変数が使える範囲）から外れてしまい使用することが出来ない。
-      #searchされた場合は、原文+.where('name LIKE ?', "%#{params[:search]}%")を実行
+      # ビューで使う変数はアクション内に定義する。変数に「＠」が付いている事にも意味がある。def [アクション名] ... endの間に変数を定義することができる
+      # Railsでは、変数名を「@」から始めることでその変数を「インスタンス変数」として定義することが出来る。そしてこのインスタンス変数をビューで使用することができる。「＠」をつけない場合、その変数はローカル変数となり、ビューで変数を使おうとしてもスコープ（変数が使える範囲）から外れてしまい使用することが出来ない。
+      # searchされた場合は、原文+.where('name LIKE ?', "%#{params[:search]}%")を実行
       User.paginate(page: params[:page]).where('name LIKE ?', "%#{params[:search]}%")
     else
-      #searchされていない場合は、原文そのまま
+      # searchされていない場合は、原文そのまま
       User.paginate(page: params[:page])
     end
   end
 
-  def show
+  def show # (特定の投稿を表示する画面)
     @worked_sum = @attendances.where.not(started_at: nil).count
   end
 
-  def new
+  def new # (投稿の新規作成画面)
     @user = User.new
   end
 
-  def create
+  def create #(投稿の新規保存)
     @user = User.new(user_params)
     if @user.save
       log_in @user
@@ -39,19 +42,20 @@ class UsersController < ApplicationController
     end
   end
 
-  def edit
+  def edit # (投稿の編集画面)
   end
 
-  def update
+  def update # (投稿の更新保存)
     if @user.update_attributes(user_params)
       flash[:success] = "ユーザー情報を更新しました。"
       redirect_to @user
     else
-      render :edit      
+      render :edit # renderメソッド かなり簡潔な内容だが、これでeditアクションを経由せずedit.html.erbを直接表示することが可能。renderメソッドを使うと、redirect_toメソッドを使った時と違い、そのアクション（今回はupdateアクション）内で定義したインスタンス変数をそのまま使用することができる。            
     end
   end
 
-  def destroy
+# 「リダイレクトするときは..._urlと指定する」とだけ覚えておく
+  def destroy # (投稿の削除)
     @user.destroy
     flash[:success] = "#{@user.name}のデータを削除しました。"
     redirect_to users_url

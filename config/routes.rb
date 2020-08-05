@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   # 左記のroot 'static_pages#top'では、/static_pages#topというURLに対するROOTリクエストを、StaticPagesコントローラのtopアクションと結びつけています。
   get '/signup', to: 'users#new'
   # ブラウザから「〜/get/signup」というURLが送信された時に、usersコントローラのtopアクションの処理が実行されるようになる。ブラウザで〜/get/signupを送信してトップページが表示される
+  # ユーザー登録ページのルーティングに設定してある/signupは、Usersコントローラのnewアクションと紐付いている。
 
   # ログイン機能
   # 途中のカンマ（,）や、コントローラとアクションの間にある井桁（#）の入れ忘れに注意する。
