@@ -4,7 +4,7 @@ class User < ApplicationRecord
   attr_accessor :remember_token
   before_save { self.email = email.downcase }
 
-  validates :name, presence: true, length: { maximum: 50 } #名前（name）カラムに存在性の検証（空の投稿を認めない）
+  validates :name, presence: true, length: { maximum: 50 } #名前（name）カラムに存在性の検証（空の投稿を認めない） すべての記事に名前が存在し、その長さが50字以下であることが保証される。そうでない場合には記事はデータベースに保存されない。Railsには豊富なバリデーション機能があり、存在確認、カラムでの重複確認、フォーマット確認、関連付けられたオブジェクトがあるかどうかの確認などが行える。バリデーション機能が追加されたので、バリデーションをパスしない@userに対して@user.saveを実行するとfalseが返されるようになっている。
 
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, length: { maximum: 100 },
