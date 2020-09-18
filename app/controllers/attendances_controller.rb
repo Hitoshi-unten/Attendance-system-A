@@ -31,11 +31,20 @@ class AttendancesController < ApplicationController
   end
   
   def update_one_month
-    ActiveRecord::Base.transaction do # トランザクション（例外処理）を開始します。
+    # トランザクション（例外処理）を開始。
+    ActiveRecord::Base.transaction do
+    # データベースの操作を保証したい処理をここに記述する。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
+        # 上記では、attendances_paramsオブジェクトに対してeachメソッドを呼び出している。
+        # ブロックにはidとitemを渡している。これはAttendanceモデルオブジェクトのidと、各カラムの値が入った更新するための情報であるitemとなる。
+        # 繰り返し処理の中では、まずはじめにidを使って更新対象となるオブジェクトを変数に代入する。その後、update_attributesメソッドの引数にitemを指定し、オブジェクトの情報を更新する。
+        # この時、update_attributesの末尾に！が付いていることがとても重要になる。通常、update_attbibutesの更新処理が失敗した場合はfalseが返される。
+        # しかし、今回のように！をつけている場合は、falseではなく例外処理を返すことになる。
+        # 繰り返し処理で複数のオブジェクトのデータを更新する場合は、これらの処理が全て正常に終了することを保証することが大事になる。
+        # あるデータは更新できたが、あるデータは更新できていなかった。となるとデータの整合性がなくなってしまう。
         #attendance.update_attributes!(item) #(context: :invalid_finished_at)
-        #attendance.attributes = item
+        #attendance.attributes = itemupdate_attributesの末尾に！が付いていることがとても重要になる。
         if item[:started_at].present? && item[:finished_at].blank?
           flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
           redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
@@ -47,9 +56,11 @@ class AttendancesController < ApplicationController
         
       end
     end
+    # トランザクションによる例外処理の分岐になる。
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
     redirect_to user_url(date: params[:date])
-  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐になる。
+    # ここに例外が発生した時の処理を記述する。
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
@@ -67,8 +78,10 @@ class AttendancesController < ApplicationController
     def admin_or_correct_user
       @user = User.find(params[:user_id]) if @user.blank?
       unless current_user?(@user) || current_user.admin?
+        # どちらかの条件式がtrueか、どちらもtrueの時には何も実行されない処理になる。
         flash[:danger] = "編集権限がありません。"
         redirect_to(root_url)
+        # このフィルターに引っ掛かった場合は、トップページに強制移動になる。
       end
     end
 end

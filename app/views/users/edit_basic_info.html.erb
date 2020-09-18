@@ -4,6 +4,12 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
     <%= form_with(model: @user, url: update_basic_info_user_path(@user), local: true, method: :patch) do |f| %>
+    <!--userオブジェクトをform_withメソッドに渡すと、編集済みの記事を送信するときに使うURLが魔法のように自動作成される。
+    Railsはmodelオプションに渡された値を読み取り、(今回の場合は) PATCHというHTTPメソッドでこのフォームを送信しようとする。
+    PATCHメソッドは、RESTプロトコルに基いてリソースを更新する場合に使う。-->
+    <!--form_withメソッドの引数にはモデルオブジェクトを（model: @userなどのような形で）渡せます。このときヘルパーはuser
+    オブジェクトに含まれているフィールドでフォームの項目を埋める。scope: :userのようにスコープにシンボルを指定すると、
+    フィールドが空の状態で作成される。-->
       <%= render 'shared/error_messages', object: @user %>
       
       <%= f.label :basic_time, class: "label-user" %>

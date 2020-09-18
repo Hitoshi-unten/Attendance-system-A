@@ -55,8 +55,14 @@
           <% if current_user.admin? && !current_user?(user) %>
             <!--< %= link_to "基本情報編集", edit_basic_info_user_path(user), remote: true, class: "btn btn-success" %>-->
             <%= link_to "基本情報編集", edit_basic_info_user_path(user), class: "btn btn-success" %>
+            <!--この「基本情報編集」リンクをクリックするとフォームが表示され、そこで新しい記事を作成することができるようになる。-->
             <%= link_to "削除", user, method: :delete,
                 data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>
+                <!--上で追加したコードでは、link_toメソッドの使い方がこれまでと違っていることに注意。2番目の引数で名前付きルートを渡している点はこれまでと同じだが、その後に別の引数がある。
+                このmethod: :deleteオプションとdata: { confirm: '削除してよろしいですか？' }オプションはHTML5の属性です。このリンクをクリックすると、本当に削除してよいかどうかを確認する
+                メッセージを表示し、その後deleteメソッドとリンクを送信します。このダイアログボックスの表示はrails-ujsというJavaScriptファイルによって自動的に行われます。このファイルは
+                アプリケーションの生成時に自動的にアプリケーションレイアウト (app/views/layouts/application.html.erb) に含まれます。このJavaScriptファイルがないと、ダイアログボックスは
+                表示されません。-->
           <% end %>
         </td>
       </tr>

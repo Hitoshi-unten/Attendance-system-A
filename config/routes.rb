@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   # ルーティングは、一致するURLをプログラムの記述通りに上から探していく。
   # 入力された新規投稿を受け取るためのアクション。１．入力フォームに投稿内容となるテキストを入力する。２．フォームの「投稿ボタン」を押す。３．保存用のアクション（createアクション）が呼び出され、受け取った内容をDBに保存する。# createアクションのURLは.../posts/createとする。フォームの値を受け取るアクションのルーティングでは、postと記述する必要がある。
   # ルーティング は、リクエストをどのコントローラに割り振るかを決定するためのもの。1つのコントローラに対して複数のルーティングがあるのはよくあること。
+  # 「get'URL',to:'コントローラー名#アクション名'」という文法で記述する。このルーティングの設定によって、ブラウザから「〜/login」というURLが送信された時にsessionコントローラーのnewアクションの処理が実行されるようになる。
   get    '/login', to: 'sessions#new'
   post   '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
@@ -27,8 +28,17 @@ Rails.application.routes.draw do
       get 'edit_basic_info'
       patch 'update_basic_info'
       get 'attendances/edit_one_month'
-      patch 'attendances/update_one_month'  # この行が追加対象です。
+      patch 'attendances/update_one_month'  # 注目すべきは、コントローラがattendancesと設定されている点。Userリソースに含まれるよう設定したが、attendances/...と記述することによってattendances_edit_one_month_user_pathとルーティングの設定を追加することが可能。URLはusers/1/attendances/edit_one_monthと直感的になる。
     end
     resources :attendances, only: :update 
   end
 end
+
+ #HTTP	URL	アクション	ルーティングヘルパー	目的
+ #GET	/users	index	users_path	ユーザーを一覧表示するページ
+ #GET	/users/1	show	user_path(1)	特定のユーザーを表示するページ
+ #GET	/users/new	new	new_user_path	ユーザーを新規作成するページ
+ #GET	/users/1/edit	edit	edit_user_path(1)	ユーザーを編集するページ
+ #POST	/users	create	users_path	ユーザーを作成・保存するアクション
+ #PATCH	users/1	update	user_path(1)	ユーザーを更新するアクション
+ #DELETE	users/1	destroy	user_path(1)	ユーザーを削除するアクション

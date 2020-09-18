@@ -17,6 +17,10 @@
     <tr>
       <td>所属：<%= @user.department.present? ? @user.department : "未所属" %></td>
       <td>氏名：<%= @user.name %></td>
+      <!--このビューでは、埋め込みRuby（ERB）を使用してユーザーの名前とメールアドレスを表示する。-->
+      <!--@で始まる@userというオブジェクトはインスタンス変数という変数のうちのひとつ。-->
+
+      <!--この@userをドット記法で繋げることにより、インスタンス変数に代入しているユーザーオブジェクトのnameの値を取得し表示することができる仕組み。-->
       <td>コード</td>
       <td>出勤日数：<%= @worked_sum %></td>
       <td>締め：<%= l(@last_day, format: :short) %></td>
@@ -50,10 +54,13 @@
     </thead>
     
     <tbody>
+      <!--月の初日からを繰り返し処理して行を出力していることで月の日付が一覧表示されている。-->
       <% @attendances.each do |day| %>
         <tr>
+          <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。-->
           <td><%= l(day.worked_on, format: :short) %></td>
           <td>
+            <!--wdayメソッドを使うことで、何番目（日曜から始まり0から数える）の曜日か確認できる。-->
             <% if day.worked_on.wday == 6 %>
                <font color="Blue"><%= $days_of_the_week[day.worked_on.wday] %></font>
             <% elsif day.worked_on.wday == 0 %>
@@ -67,12 +74,15 @@
             <% if btn_text = attendance_state(day) %>
               <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
             <% end %>
+            <!--この構文では、まずif文の条件式に記述されているattendance_stateが呼び出される。引数には繰り返し処理中のAttendanceオブジェクトを渡している。このメソッドから３パターンの戻り値が返ってくる。attendances_helper。その戻り値をbtn＿text変数に代入している。こうすることで、処理が実行された時、戻り値の値を使用できる仕組みになっている。-->
           </td>
           <td><%= format_hour(day.finished_at) if day.finished_at.present? %></td>
           <td><%= format_min(day.finished_at)  if day.finished_at.present? %></td>
           <td></td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
+            <!--これは繰り返し処理中の勤怠データに、started_atとfinished_atの値が存在するか判定するもの。-->
+            <!--在社時間を計算するためには上記どちらの値も必須なので、これらが存在することを確認してからヘルパーメソッドを呼び出すよう設定している。-->
               <%= working_times(day.started_at, day.finished_at) %>
             <% end %>
           </td>
@@ -92,6 +102,7 @@
       <tr>
         <td colspan="2"><%= @attendances.count %></td>
         <td colspan="2"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
+      　<!--式の右側の@worked_sumの値はそのまま計算できるが、左側に関してはformat_basic_infoでの戻り値がstringクラスになるためそのままだとうまく計算されない。文字列と数値はそのまま計算しても期待する結果は返ってこない。そのため、to_fメソッドを追加。このメソッドは、文字列を浮動小数点化とみなしてFloatオブジェクトに変換する。to_iメソッド（文字列から整数に変換）の小数点付きバージョン。これで正常に計算結果を出力できるようになる。-->
         <td colspan="2"><%= format("%.2f", @total_working_times.to_f) %></td>
       </tr>
     </tfoot>

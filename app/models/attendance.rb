@@ -1,7 +1,12 @@
 class Attendance < ApplicationRecord
+  # belong_to :userはUserモデルと１対１の関係を示している。
+  # rails g model Attendance worked_on:date started_at:datetime finished_at:datetime note:string user:references これをターミナルで実行するとAtetndanceモデルが生成される。
+  # 生成されたコードでは、Userモデルと１対１の関係を示すbelongs_to :userというコードが記述されている。これは先ほど実行したコマンドにuser:referenceという引数を含めたため。
+  # この引数を使うと、自動的にuser_id属性が追加されActiveRecordがUserモデルとAttendanceモデルを紐づける準備をしてくれる。
   belongs_to :user
-
+  # 日付取り扱いは存在性の検証が必要。
   validates :worked_on, presence: true
+  # noteは一言メモ、最大文字数を50文字と設定。
   validates :note, length: { maximum: 50 }
 
   # 出勤時間が存在しない場合、退勤時間は無効
@@ -36,5 +41,8 @@ end
   #   errors.add("出勤時間と退勤時間の入力が必要です") if started_at.present? && finished_at.blank?
   # end
   
-  #「今日の日付が存在し、かつ、出勤時間がpresentであり、かつ、退勤時間がblankである」場合以外は、バリデーションでエラーを出力する
-  #「出勤時間がpresentであり、かつ、退勤時間がblankである」場合は、バリデーションでエラーを出力する。ただし今日の日付が存在する場合は除く。
+  # 「今日の日付が存在し、かつ、出勤時間がpresentであり、かつ、退勤時間がblankである」場合以外は、バリデーションでエラーを出力する
+  # 「出勤時間がpresentであり、かつ、退勤時間がblankである」場合は、バリデーションでエラーを出力する。ただし今日の日付が存在する場合は除く。
+  #  AttendanceモデルをUserモデルと分けて追加する理由は、Userモデルでは日付ごとに登録が必要な出勤時間や退勤時間の情報を持つことができないから。この問題を解決するために別モデル（Attendanceモデル）を用意して勤怠情報を日付ごとにレコードとして管理、１つのレコードをUserモデルと紐付けることによりユーザーの勤怠情報として取り扱えるようにする。
+  # id integer ID worked_on date日付取り扱い started_at datetime 出勤時刻 finished_at datetime 退勤時刻 note string 備考 user_id integer ユーザを紐付ける created_at datetime 作成日時 updated_at datetime 更新日時
+  # 自らを管理するためのidと、Userモデルと紐づけるためのuser_idを設定。user_idでユーザーを特定し、ActiveRecord特有の設定でモデル同士を紐付ける。
