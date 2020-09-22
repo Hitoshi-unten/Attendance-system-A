@@ -9,6 +9,8 @@ class Attendance < ApplicationRecord
   # noteは一言メモ、最大文字数を50文字と設定。
   validates :note, length: { maximum: 50 }
 
+  # Railsでは、モデルの状態を確認し、無効な場合errorsオブジェクトにメッセージを追加するメソッドを作成することができる。
+  # このメソッドを作成後、バリデーションメソッド名を指すシンボルを渡しvalidateクラスメソッドを使って登録する必要がある。
   # 出勤時間が存在しない場合、退勤時間は無効
   validate :finished_at_is_invalid_without_a_started_at
 
@@ -19,7 +21,10 @@ class Attendance < ApplicationRecord
   
   validate :finished_at_is_invalid_without_a_finished_at, on: :invalid_finished_at
   
-  
+ # blank?は対象がnil "" " " [] {}のいずれかでtrueを返す。
+ # present?はその逆（値が存在する場合）にtrueを返す。
+ # &&は左右どちらもtrueの時、trueを返す。（true && falseやfalse && trueやfalse && falseの場合はfalseを返す）
+ 
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present?
   end

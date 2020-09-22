@@ -4,6 +4,12 @@
   <table class="table table-bordered user-table">
     <tr>
       <td>
+        <!--ページ内にボタンを配置し、前月分、次月分へ表示切り替えできる機能を追加する。-->
+        <!--手法としては、link_toヘルパーメソッドにパラメーターを追加で渡し、パラメーターの有無によりページに表示する１ヶ月分の情報を判断する。-->
+        <!--下記のように記述することで、paramsハッシュにdateキーを含めることができる。-->
+        <!--idに関してはuser_pathによりRailsが自動的に判断して追加してくれる。-->
+        <!--値には@first_day.prev_monthを指定している。prev_monthは対象のDateオブジェクトの１ヶ月前の状態を返す。つまり前月の日付情報をパラメーターで渡せるということでこれが次月の情報の場合はnext_monthを使用する-->
+        <!--この拡張により、params[:date]から表示したい１ヶ月の情報を取り出せるようになった。-->
         <%= link_to "⇦︎︎︎", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-left" %>
         <%= l(@first_day, format: :middle) %>   時間管理表
         <%= link_to "︎︎︎⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-right" %>
@@ -68,6 +74,7 @@
             <% else %>
                <%= $days_of_the_week[day.worked_on.wday] %>
             <% end %>
+            <!--後置きのifによって、started_atの値が存在する場合のみ表示できるよう制御している。-->
           <td><%= format_hour(day.started_at) if day.started_at.present? %></td> 
           <td><%= format_min(day.started_at)  if day.started_at.present? %></td>
           <td>
@@ -92,6 +99,8 @@
     </tbody>
     
     <tfoot>
+      <!--勤怠表にフッター部分を追加する。フッターとは、Webページなどにおいて各ページの下部に定形の情報を表示するための領域のこと。勤怠表の一番下に追加情報表示領域を作ろうというもの。-->
+      <!--表示領域には、・１ヶ月分の合計日数、・出勤した日付だけのwork_time（勤務時間）累計、・在社時間の累計 以上を表記する。-->
       <!--rowspan:縦結合、colspan：横結合-->
       <tr>
         <td colspan="2">累計日数</td>
@@ -102,8 +111,12 @@
       <tr>
         <td colspan="2"><%= @attendances.count %></td>
         <td colspan="2"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
-      　<!--式の右側の@worked_sumの値はそのまま計算できるが、左側に関してはformat_basic_infoでの戻り値がstringクラスになるためそのままだとうまく計算されない。文字列と数値はそのまま計算しても期待する結果は返ってこない。そのため、to_fメソッドを追加。このメソッドは、文字列を浮動小数点化とみなしてFloatオブジェクトに変換する。to_iメソッド（文字列から整数に変換）の小数点付きバージョン。これで正常に計算結果を出力できるようになる。-->
+        <!--今回の総合勤務時間は[work_time]*[出勤日数]の結果を意味する。つまり、ユーザーの出勤日数から想定した勤務時間の累計になる。-->
+        <!--勤怠基本情報は、showアクション内ですでに@user変数として代入されている。そして出勤日数も同様に、@worked_sum変数に代入されている。計算に必要な両方の価が取得可能な状態なので、あとは計算するだけとなる。-->
+      　<!--式の右側の@worked_sumの値はそのまま計算できるが、左側に関してはformat_basic_infoでの戻り値がstringクラスになるためそのままだとうまく計算されない。文字列と数値はそのまま計算しても期待する結果は返ってこない。
+      　そのため、to_fメソッドを追加。このメソッドは、文字列を浮動小数点数とみなしてFloatオブジェクトに変換する。to_iメソッド（文字列から整数に変換）の小数点付きバージョン。これで正常に計算結果を出力できるようになる。-->
         <td colspan="2"><%= format("%.2f", @total_working_times.to_f) %></td>
+        <!--こちらは計算結果を小数点第二位までフォーマットしている。-->
       </tr>
     </tfoot>
   </table>
