@@ -26,7 +26,7 @@ class Attendance < ApplicationRecord
  # &&は左右どちらもtrueの時、trueを返す。（true && falseやfalse && trueやfalse && falseの場合はfalseを返す）
  
   def finished_at_is_invalid_without_a_started_at
-    errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present?
+    errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present? # どちらも真(true)だった場合に、エラーメッセージの追加が実行される仕組み。つまり「出勤時間が無い、かつ退勤時間が存在する場合」、trueとなって処理が実行される。
   end
 
   

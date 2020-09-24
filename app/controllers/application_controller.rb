@@ -1,5 +1,10 @@
 class ApplicationController < ActionController::Base
   # 全てのコントローラの継承元となるaplicationコントローラにあるメソッドは、usersコントローラでもattendancesコントローラからでも呼び出すことができる。
+  # 「ユーザー」が持つ月日を一覧表示する。Dateクラスオブジェクト（日付データ）を一覧表示しているだけのものをUserモデルに紐づくAttendanceモデルのworked_onを一覧表示する。このようにすると「値の取得がシンプルになり、終盤の実装が楽、かつコードを簡潔に表現できる」から。
+  # そのため、ユーザーがユーザー情報ページにアクセスした時に、そのユーザーに紐付くAttendanceモデルの当月分の日付データが存在する必要がある。
+  # この状況に対応するため、「ユーザー情報ページにアクセスする時、対象のユーザーに紐付く当月分の勤怠データが無い場合はまとめて生成する、勤怠データがない場合は通常通り表示する」ような処理を作成する。
+  # この処理は現状ユーザー情報ページでしか実施しないが、usersコントローラーの親クラスとなるapplicationコントローラにbefore_actionとして作成する。
+  
   protect_from_forgery with: :exception
   include SessionsHelper
 
@@ -49,13 +54,14 @@ class ApplicationController < ActionController::Base
   # このメソッドをbeforeアクションとして実行することで、ページを開きたいのに１ヶ月分のデータが無い状態を防ぐようにしている。
   # このset_one_monthメソッドはbefore_actionとして実行する。before_actionは指定のアクションが呼び出される前に実行される。その為、@first_dayと@last_dayはshowアクションからこちらへ引っ越すことになる。
   def set_one_month
-    # 下記のコードは長いので改行しているが、実施には次のような三項演算子のプログラムとなっている。@first_day = params[:date].nil? ? Date.current.beginning_of_month : params[:date].to_date @last_day = @first_day.end_of_month
+    # 下記のコードは長いので改行しているが、実際には次のような三項演算子のプログラムとなっている。@first_day = params[:date].nil? ? Date.current.beginning_of_month : params[:date].to_date @last_day = @first_day.end_of_month
     # if文や上記の三項演算子はコンソールで確認するとわかるが、結果を戻り値として返すので@first_day変数にそのまま代入することが可能となる。・・・意味がわからない！
-    @first_day = params[:date].nil? ?
-    Date.current.beginning_of_month : params[:date].to_date #@first_dayではまず当日を取得するためDate.currentを使っている。これにRailsのメソッドであるbeginning_of_monthを繋げることで当月の初日を取得することができる。
+    @first_day = params[:date].nil? ? # 日付のみでひと月分を表示してみる。月の初日と月の末日の日付データをそれぞれインスタンス変数で定義する。これらを範囲オブジェクトとして扱うことで、手軽にひと月分の情報を表示することが可能となる。
+    Date.current.beginning_of_month : params[:date].to_date # @first_dayではまず当日を取得するためDate.currentを使っている。これにRailsのメソッドであるbeginning_of_monthを繋げることで当月の初日を取得することができる。
     @last_day = @first_day.end_of_month #@last_dayでは、@first_dayをはじめに記述することでDate.currentを２回実行せずに済む。こういった工夫は大事。end_of_monthは当月の終日を取得することができる。
     # 次にこれらのインスタンス変数を使って、１ヶ月分のオブジェクトが代入された配列を定義する。この配列はメソッド内で後ほど使用するが、showアクションでは使用しない為ローカル変数に代入している。
     one_month = [*@first_day..@last_day] # 対象の月の日数を代入する。
+    # 1ヶ月分のオブジェクトが代入された配列を定義する。この配列はメソッド内で使用するが、showアクションでは使わない為ローカル変数に代入している。
     # ユーザーに紐付く一ヶ月分のレコードを検索し取得する。
     # この構文により、「１ヶ月分のユーザーに紐づく勤怠データを検索し取得する」ことが出来る。
     # @userはメソッド内で定義していないように見えるが、showアクションではbefore_actionとしてset_userメソッドも設定されている。このset_userは今回定義したset_one_monthよりも上に記述することで、beforeアクションの中でも優先的に実行されることになる。その為、このように使用することができる。ここは理解できていない！
@@ -68,10 +74,10 @@ class ApplicationController < ActionController::Base
     # 条件式を見ると、どちらのオブジェクトにもcountが呼び出されている。countメソッドは、対象のオブジェクトが配列の場合要素数を返す。
     # これにより、１ヶ月分の日付の件数と勤怠データの件数が一致するか評価する。
     # ==演算子により上記の一致した場合はtrue、一致しない場合はfalseが返されるため内部処理が制御される仕組み。
-    unless one_month.count == @attendances.count # １ヶ月分の日付の件数と勤怠データの件数（日数）が一致するか評価する。
+    unless one_month.count == @attendances.count # 1ヶ月分の日付の件数と勤怠データの件数（日数）が一致するか評価する。
       # Transaction（トランザクション）とは、指定したブロックにあるデータベースへの操作が全部成功することを保証する為の機能でデータの整合性を保つために使用されている。
       # 勤怠データを生成する繰り返し処理のコードを、トランザクションのブロックで囲んでいて、このブロック内で例外処理（!）が発生した場合にロールバックが発動する仕組みとなっている。
-      # 何らかの原因で、勤怠データが期待通りに生成できずcreate!メソッドが例外を吐き出した時に、この繰り返し処理が始まる前の状態のデータベースに戻るようになっている。ロールバック後は実行がスキップされ、fフラッシュメッセージを代入してトップページにリダイレクトされる。
+      # 何らかの原因で、勤怠データが期待通りに生成できずcreate!メソッドが例外を吐き出した時に、この繰り返し処理が始まる前の状態のデータベースに戻るようになっている。ロールバック後は実行がスキップされ、フラッシュメッセージを代入してトップページにリダイレクトされる。
       # トランザクションの内容は理解しようとすると時間がかかってしまうため、次のように覚えておく。
       # 「まとめてデータを保存や更新するときに、全部成功したことを保証するための機能」
       # 「万が一途中で失敗した時は、エラー発生時専用のプログラム部分までスキップする」
@@ -81,7 +87,7 @@ class ApplicationController < ActionController::Base
         # 内部ではone_monthに対してeachメソッドを呼び出している。
         # ブロックに対してはdayブロック変数を定義している。
         # このdayブロック変数が、ブロック内の@user.attendances.create!(worked_on: day)で呼び出せる仕組みになっている。
-　　　　# ここでは１ヶ月分の日付が繰り返し処理されて実行されており、createメソッドによってworked_onに日付の値が入ったAttendanceモデルのデータが生成されている。
+　　　　# ここでは1ヶ月分の日付が繰り返し処理されて実行されており、createメソッドによってworked_onに日付の値が入ったAttendanceモデルのデータが生成されている。
         one_month.each do |day|
           @user.attendances.create!(worked_on: day)
         end
@@ -92,7 +98,7 @@ class ApplicationController < ActionController::Base
       @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
     end
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    flash[:danger] = "ページ情報の取得に失敗し���した、再アクセスしてください。"
+    flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
     redirect_to root_url
   end
 end
