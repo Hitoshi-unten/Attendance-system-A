@@ -1,3 +1,10 @@
+# ユーザーに関する機能の準備として、ユーザー登録ページへのルーティングを設定する。
+# そのためにはコントローラが必要で、これはWebアプリユーザー登録を行えるようにするための、重要な最初の一歩となる。
+# ユーザーのモデリングを行い、ユーザーの登録機能を完成させる。
+# rails g controller Users new をターミナルで実行しUsersコントローラを作成する。
+# 新しく作られたUsersコントローラファイルにnewアクションが生成されている。newアクションに対応したビューファイル（new.html.erb）も生成されている。
+# 生成されたファイルからもわかるように、新規ユーザー登録用のページが/users/newに出来た。
+# 次はルーティングヘルパーを設定する。
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]

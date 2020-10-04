@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  # Userクラスが定義されていること、UserクラスはApplicationRecordクラスを継承していることがわかる。この継承の働きによりActive Recordのメソッドが使えるということは覚えておく。
   # ファイルにはこれしか書かれていないが、このUserクラスがApplicationRecordクラスを継承していることに注目。これによって基本的なデータベースCRUD (Create、Read、Update、Destroy) 操作やデータのバリデーション（検証: validation）のほか、洗練された検索機能や複数のモデルを互いに関連付ける機能(リレーションシップ) など、きわめて多くの機能をRailsモデルに無償で提供している。
   # AttendanceモデルからみたUserモデルとの関連性は１対１だがUserモデルからみた場合、その関係は１（user）対多（Attendance）となる。
   # Attendanceモデルファイルに記述されていたbelong_toとは違った記述が必要になる。has many〜と記述する。また、多数所持するため、複数形（attendances）となっている点もポイント。

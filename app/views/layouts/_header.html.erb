@@ -1,3 +1,15 @@
+<!--headerタグは、ページ上部にある要素（ヘッダー）を表す。（Webサイトの最上部にある色がついた帯のような部分のこと）ページ下部にある要素はフッターを表す。-->
+<!--headerタグ内には、navbar、navbar-fixed-top、navbar-inverseという３つのクラスが半角スペースの区切りにより与えられていることがわかる。-->
+<!--HTML要素は全て、class（クラス）とid（アイディー）の両方を指定することが可能。これらはCSSでスタイルを指定するときに役立つ。-->
+<!--HTML要素に対してclassはページ内で何度も使える、idはページ内で一度しか使えない。-->
+<!--headerタグの内側にはdivタグがある。divタグは一般的に表示領域を表し、要素を別々のパーツとして分けるときに使われる。-->
+<!--HTML5からはよく使われる領域ごとに細分化できるようになっており、具体的にはheader要素、nav要素、section要素が新たに使えるようになっている。-->
+<!--ここで記述されているcontainerというクラスもBootstrapによって意味が与えられる。-->
+<!--< div class="container">に続いてERBが記述されていて、ここでは、リンクを生成するためにRailsヘルパーであるlink_toを使っている。-->
+<!--第2引数のURLにはルーティングヘルパーを割り当てるが、現状はWebデザインで一般的に使われるスタブ（とりあえずようにダミー）用の#で置き換えておく。-->
+<!--Railsヘルパーは、このようにオプションのハッシュを取ることがよくあり、これによりRailsのコードから離れることなく任意のHTMLオプションを追加することができる。（直接HTMLで記述せずに済むということ）この行については理解できていない-->
+<!--divの内側、２番目の要素はulタグとliタグ（リストアイテムタグ）によって作られたナビゲーションリンクで、ulタグに付与されているnav navbar navbar-rightクラスもBootstrapによってスタイルが当てられる。。-->
+<!--これでレイアウトに関しては完成。-->
 <header class="navbar navbar-fixed-top navbar-inverse">
   <div class="container">
     <nav>
@@ -5,6 +17,11 @@
       <%= link_to "勤怠システム", current_user, id: "logo" %>
       <ul class="nav navbar-nav navbar-right">
         <li><%= link_to "トップへ", root_path %></li>
+        <!--HTMLとしては次のように記述することも可能。<a href="/static_pages/top">Top</a>-->
+        <!--しかしこの記法はRailsには適していない。-->
+        <!--Railsでは次のようなルーティングヘルパーを使用するのが一般的 < %= link_to "Top", root_path %>-->
+        <!--このように記述することで、コードの意味が一目でわかるよう設計されている。またroot_pathの定義を変えればroot_pathが使われているすべてのURLを変更できるため保守性・柔軟性が高まる。-->
+        <!--ルーティングヘルパーには、root_pathとroot_urlの２つのパターンがある。これらの使い分けとしては、ビューではpath、コントローラなどでリダイレクトする時にはurlを使う。-->
         <% if current_user.admin? %>
           <li><%= link_to "ユーザー一覧", users_path %></li>
           <li><%= link_to "基本情報の更新", edit_basic_info_user_path(current_user) %></li>

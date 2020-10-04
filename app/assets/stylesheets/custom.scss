@@ -1,3 +1,11 @@
+// 多くのHTML要素にCSSクラスを関連づけた。こうしておくことでCSSベースでレイアウトを構成する際に高い柔軟性を与えてくれる。
+// 関連づけたクラスの多くはBootstrap特有のもので、Bootstrapを使うと洗練されたデザインとユーザーインターフェース（UI）を簡単にアプリケーションに追加することができる。（クラスを当てるだけ）
+// Bootstrapをgemを使ってRailsアプリケーションに導入。次のコードをGemfileに追加する。gem 'bootstrap-sass'
+// gemを追加したらターミナルで$bundle installを実行する。
+// これまでに実行したrails generateコマンドでコントローラごとに分けられたCSSファイルが自動的に生成されているが、このチュートリアルでは簡潔に進行するため、全てのCSSを１つにまとめる。
+// まとめたCSSを格納しておくファイル（カスタムCSS）を作成しておく。touch app/assets/stylesheets/custom.scssをターミナルで実行する。
+// custom.scssにコードを書き加える。２行だけでOK。Bootstrapの威力を確認。ボタンやヘッダーのメリハリなどが良い感じになっている。
+// ここから各部位にCSSを改めて当てることで、バランスを整えていく。
 @import "bootstrap-sprockets";
 @import "bootstrap";
 

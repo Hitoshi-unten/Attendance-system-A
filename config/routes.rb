@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
-  root 'static_pages#top' 
+  root 'static_pages#top'
+  # 最初に設定したトップページは、このアプリケーションの初期ページとなるのでroot設定に割り当てることにする。
+  # このように置き換えるとコントローラ#アクションへの関連付けが変わり、ルートURL/へのGETリクエストが、StaticPagesコントローラのtopアクションにルーティングされるようになる。ルートURL/へアクセスした時にトップページが表示されるようになる。
   # アプリケーションのルーティングファイルの内容。外部からのリクエストをコントローラーとアクションに振り分ける方法を、DSL（ドメイン特化言語：domain-specific language）という特殊な言語でこのファイルを記述する。
   # root 'static_pages#top'と記述することで、アプリケーションのルートURLへのアクセスをstatic_pagesコントローラのtopアクションに割り当てるようRailsに指示が伝わる。
-  # 左記のroot 'static_pages#top'では、/static_pages#topというURLに対するROOTリクエストを、StaticPagesコントローラのtopアクションと結びつけています。
+  # root 'static_pages#top'では、/static_pages#topというURLに対するROOTリクエストを、StaticPagesコントローラのtopアクションと結びつけている。
   get '/signup', to: 'users#new'
+  # ヘルパー signup_path signup_url HTTPリクエスト GET URL /signup コントローラ#アクション users#new
   # 同様に、get '/signup', to: 'users#new'はhttps://ad8f32ee195e44f1add884d80b8f5a70.vfs.cloud9.ap-northeast-1.amazonaws.com/というリクエストをusersコントローラのnewアクションに割り当てる。
   # ブラウザでhttps://ad8f32ee195e44f1add884d80b8f5a70.vfs.cloud9.ap-northeast-1.amazonaws.com/を表示し、app/views/users/new.html.erbの中に書いた"ユーザー登録"という文字がブラウザ上に表示される。usersControllerのnewアクションへのルーディングが新たに形成され、ビューが正しく表示されたことが確認できる。
   # ブラウザから「〜/get/signup」というURLが送信された時に、usersコントローラのtopアクションの処理が実行されるようになる。ブラウザで〜/get/signupを送信してトップページが表示される
