@@ -97,6 +97,7 @@ class UsersController < ApplicationController
     # @users = User.where(worked_on:'',:'').order('')
     # where 出勤中の社員を取り出す。whereは複数件の条件のあったものを取り出す。find、find_byと合わせて覚えておく。@インスタンス変数を使う。
     # @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+    # @worked_sum = @attendances.where.not(started_at: nil).count
   end
 
   private

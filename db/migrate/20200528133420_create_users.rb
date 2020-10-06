@@ -6,12 +6,15 @@
 # テーブルに格納されるデータの例は次のようなイメージ。name ユーザー1、email user1@email.com
 # Userデータモデル草案 カラム name データ型 string（文字列型）
 # 「name（string型）とemail（string型）の２つの属性を付与したUserモデルを作成する」目的でコマンドを実行する。
-# 次のコマンドをターミナルで実行する。$ rails g model User name:string email:string コントローラには複数形（Users）、モデルには単数形（User）で指示する監修は覚えておく。
+# 次のコマンドをターミナルで実行する。$ rails g model User name:string email:string コントローラには複数形（Users）、モデルには単数形（User）で指示する慣習は覚えておく。
 # このコマンドの結果の１つとしてマイグレーションファイルというファイルが新しく作成されている。
 # ファイルの場所はdb/migrate/[timestamp]_create_users.rb（[timestamp]の部分は日時の数値が入る）
 
 class CreateUsers < ActiveRecord::Migration[5.1]
-# ファイルにはこれしか書かれていないが、このCreateUsersクラスがActiveRecord::Migration[5.1]クラスを継承していることに注目。これによって基本的なデータベースCRUD (Create、Read、Update、Destroy) 操作やデータのバリデーション（検証: validation）のほか、洗練された検索機能や複数のモデルを互いに関連付ける機能(リレーションシップ) など、きわめて多くの機能をRailsモデルに無償で提供している。
+# ファイルにはこれしか書かれていないが、このCreateUsersクラスがActiveRecord::Migration[5.1]クラスを
+# 継承していることに注目。これによって基本的なデータベースCRUD (Create、Read、Update、Destroy) 操作
+# やデータのバリデーション（検証: validation）のほか、洗練された検索機能や複数のモデルを互いに関連
+# 付ける機能(リレーションシップ) など、きわめて多くの機能をRailsモデルに無償で提供している。
   def change
 # このファイル自体はデータベースに与える変更を定義したchangeメソッドの集まりとなっている。
 # メソッド内を確認するとまずcreate_tableメソッドを呼び出し:usersと指定することによってusersテーブルを作成する。
@@ -20,8 +23,8 @@ class CreateUsers < ActiveRecord::Migration[5.1]
 # ブロックの最後にあるt.timestampsは自動的に生成される特別なコードで、created_at（datetime型）、updated_at（datetime型）という２つのマジックカラムを生成する。
 # さらにブロック内で記述はないが、id（integer型）という自動採番されるIDの役割を持ったカラムも自動で作成される。
     create_table :users do |t|
-      t.string :name
-      t.string :email
+      t.string :name #名前
+      t.string :email #メールアドレス
       t.string :affiliation #所属
       t.integer :employee_number #社員番号
       t.string :uid #カードID
