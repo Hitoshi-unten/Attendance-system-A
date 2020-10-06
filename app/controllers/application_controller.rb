@@ -68,7 +68,7 @@ class ApplicationController < ActionController::Base
     # @userの先を見ると、.attendancesという複数形の記述がある。これはActiveRecord特有の記法で、対象モデル（今回はUserモデル）に紐づくモデルを指定する。UserモデルとAttendanceモデルは１対多の関係なので、attendancesとなる仕組み。
     # さらにこの@user.attendancesに対し、whereメソッドを呼び出している。引数にはworked_onをキーとして定義済みのインスタンス変数を範囲として指定している。
     # この構文により、「１ヶ月分のユーザーに紐づく勤怠データを検索し取得する」ことができる。このオブジェクトに成功した場合、showアクションでも使用することになる為インスタンス変数に代入している。
-    @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+    @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on) # whereは複数件の条件のあったものを取り出す。find、find_byと合わせて覚えておく。
 
     # unless文は、条件式がfalseと評価された場合のみ、内部の処理を実行する。
     # 条件式を見ると、どちらのオブジェクトにもcountが呼び出されている。countメソッドは、対象のオブジェクトが配列の場合要素数を返す。
@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
           @user.attendances.create!(worked_on: day)
         end
       end
-      # @attendancesの定義箇所を２箇所にふやしている。これは実際に日付データを繰り返し処理で生成した後にも、正しく@attendances変数に価が代入されるようにするため。
+      # @attendancesの定義箇所を２箇所にふやしている。これは実際に日付データを繰り返し処理で生成した後にも、正しく@attendances変数に値が代入されるようにするため。
       # それぞれの文末には、orderメソッドを付け加えた。このメソッドは取得したデータを並び替える働きをする。
       # 下記のように記述することで、取得したAttendanceモデルの配列をworked_onの値をもとに昇順に並び替えることができる。
       @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)

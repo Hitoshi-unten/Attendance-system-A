@@ -1,0 +1,48 @@
+<% provide(:title, '出勤社員一覧') %>
+
+<h1>出勤社員一覧</h1>
+<div class="col-md-10 col-md-offset-1">
+  <table class="table table-condensed table-hover" id="table-users">
+    <thead>
+      <tr>
+        <th>社員番号</th>
+        <th>名前</th>
+      </tr>  
+    </thead>
+    <!--< % @users.each do |user| %>-->
+    <!--< % @user = user %>-->
+    <!--< % if day.started_at.present? && day.finished_at.nil? %>-->
+    <!--  <tr>-->
+    <!--    <td>< %= @user.employee_number.present? ?@user.enployee_number :"未設定" %></td>-->
+    <!--  </tr>-->
+  </table>
+</div>
+
+<!--<div class="row">-->
+<!--  <div class="col-md-6 col-md-offset-3">-->
+<!--    < % @users.each do |user| %>-->
+<!--      <tr>-->
+<!--        <td>-->
+<!--          < % if current_user.admin? %>-->
+<!--            < %= link_to user.name, user %>-->
+<!--          < % else %>-->
+<!--            < %= user.name %>-->
+<!--          < % end %>-->
+<!--        </td>-->
+<!--        <td class="center">< %= user.department.present? ? user.department : "未所属" %></td>-->
+<!--        < % if current_user.admin? %>-->
+<!--          <td class="center">< %= format_basic_info(user.basic_time) %></td>-->
+<!--          <td class="center">< %= format_basic_info(user.work_time) %></td>-->
+<!--        < % end %>-->
+<!--        <td class="center">-->
+<!--          < % if current_user.admin? && !current_user?(user) %>-->
+<!--            < %= link_to "基本情報編集", edit_basic_info_user_path(user), remote: true, class: "btn btn-success" %>-->
+<!--            < %= link_to "基本情報編集", edit_basic_info_user_path(user), class: "btn btn-success" %>-->
+<!--            < %= link_to "削除", user, method: :delete,-->
+<!--                data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>-->
+<!--          < % end %>-->
+<!--        </td>-->
+<!--      </tr>-->
+<!--    < % end %>-->
+<!--  </div>-->
+<!--</div>-->
