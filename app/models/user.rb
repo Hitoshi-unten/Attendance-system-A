@@ -63,4 +63,9 @@ class User < ApplicationRecord
       all #全て表示。User.は省略
     end
   end
+  
+  def self.in_working_users
+    in_working_users = Attendance.where(worked_on: Date.today,finished_at: nil).where.not(started_at: nil).pluck(:user_id).uniq
+    where(id: in_working_users)
+  end
 end

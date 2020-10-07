@@ -94,11 +94,14 @@ class UsersController < ApplicationController
   end
   
   def list_of_employees
+    @in_working_users = User.in_working_users
+    # @users = User.includes(:attendances).where("attendances.started_at.present && attendances.finished_at.nil", Date.today).references(:attendances)
+  end
+    # @user = @attendances.where.not(started_at: nil) # 「１ヶ月分の勤怠データの中で、出勤時間が何もない状態ではないものの数を代入」
     # @users = User.where(worked_on:'',:'').order('')
     # where 出勤中の社員を取り出す。whereは複数件の条件のあったものを取り出す。find、find_byと合わせて覚えておく。@インスタンス変数を使う。
     # @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
     # @worked_sum = @attendances.where.not(started_at: nil).count
-  end
 
   private
 
