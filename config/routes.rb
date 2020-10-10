@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'bases/index'
+
   root 'static_pages#top'
   # 最初に設定したトップページは、このアプリケーションの初期ページとなるのでroot設定に割り当てることにする。
   # このように置き換えるとコントローラ#アクションへの関連付けが変わり、ルートURL/へのGETリクエストが、StaticPagesコントローラのtopアクションにルーティングされるようになる。ルートURL/へアクセスした時にトップページが表示されるようになる。

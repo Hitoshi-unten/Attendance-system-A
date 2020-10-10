@@ -1,0 +1,55 @@
+<% provide(:title, 'Base-Index') %>
+<% provide(:button_text, '編集') %>
+
+<h1>拠点一覧</h1>
+
+<table class="table table-bordered table-condensed user-table">
+  <tr>
+    <td></td>
+    <td></td>
+    <td>拠点番号</td>
+    <td>拠点名</td>
+    <td>勤怠種類</td>
+  </tr>
+  
+  <% @bases.each do |base| %>
+    <tr>
+      <td>
+        <button type="button" class="btn btn-primary mt-5" data-toggle="modal" data-target="#post">編集</button>
+          <div class="modal fade" id="post" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <%= form_with(model: @base, url: basis_path(base), local: true, method: :patch) do |f| %>
+                  <table class="table table-bordered table-condensed user-table">
+                    <tr>
+                      <td><%= f.label :id, class: "label-#{yield(:class_text)}" %>
+                          <%= f.text_field :id, class: "form-control", placeholder: "拠点番号を記入してください" %>
+                      </td>
+  
+                      <td><%= f.label :name, class: "label-#{yield(:class_text)}" %>
+                          <%= f.text_field :name, class: "form-control", placeholder: "拠点名を記入してください" %>
+                      </td>
+  
+                      <td><%= f.label :attendance_sort, class: "label-#{yield(:class_text)}" %>
+                          <%= f.select :attendance_sort, [["選択してください", 0],["出勤", 1],["退勤", 2]] %>
+                      </td>
+                    </tr>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                      <%= f.submit :"編集", class: "btn btn-primary" %>
+                    </div>
+                  </table>
+                <% end %>
+              </div>
+            </div>
+          </div>
+      </td>
+      <td><%= link_to "削除", '#', class: "btn btn-primary", data: {confirm: "削除してよろしいですか？" } %></td>
+      <td><%= base.id %></td>
+      <td><%= base.name %></td>
+      <td><%= base.attendance_sort %></td>
+    </tr>
+  <% end %>
+</table>
+
+<%= link_to "拠点情報追加", new_basis_path, class: "btn btn-lg btn-primary" %>
