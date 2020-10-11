@@ -41,6 +41,14 @@ Rails.application.routes.draw do
     resources :attendances, only: :update # AttendanceリソースとしてはupdateアクションのみでOKでonlyオプションを指定することで、updateアクション以外のルーティングを制限できる。
     # また、usersリソースのブロック内に記述しているため、設定されるルーティングは次のようになる。HTTP PATCH URL /users/:user_id/attendances/:id PATH user_attendance_path コントローラ#アクション attendances#update
     # これならユーザーに紐づいた勤怠データを作成するイメージが付きやすい。また、URL内に:user_idが含まれている点にも注目で、これによりparams[:user_id]でユーザーIDが取得できる。
+    resources :bases
+      member do
+        get 'bases', to: 'bases#index'
+        get 'edit_base_info', to: 'bases#edit_base_info'
+        get '/new', to: 'bases#create'
+        delete '/destroy', to: 'base#destroy'
+        patch 'bases/update_base_info'
+      end
   end
 end
 
