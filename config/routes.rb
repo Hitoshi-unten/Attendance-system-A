@@ -49,6 +49,7 @@ Rails.application.routes.draw do
         delete '/destroy', to: 'base#destroy'
         patch 'bases/update_base_info'
       end
+
   end
 end
 
