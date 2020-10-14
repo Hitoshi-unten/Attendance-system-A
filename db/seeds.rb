@@ -15,3 +15,19 @@ User.create!(name: "Sample User",
                password: password,
                password_confirmation: password)
 end
+
+puts "users created"
+
+Base.create!(base_id: 1,
+             name: "東京",
+             attendance: "出勤")
+             
+Base.create!(base_id: 2,
+             name: "大阪",
+             attendance: "出勤")
+             
+Base.create!(base_id: 3,
+             name: "愛知",
+             attendance: "退勤")
+             
+puts "bases created"

@@ -80,9 +80,6 @@ class UsersController < ApplicationController
     flash[:success] = "#{@user.name}のデータを削除しました。"
     redirect_to users_url
   end
-
-  def edit_basic_info
-  end
   
   def update_basic_info
     if @user.update_attributes(basic_info_params)

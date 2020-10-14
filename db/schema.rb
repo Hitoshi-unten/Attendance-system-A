@@ -27,21 +27,27 @@ ActiveRecord::Schema.define(version: 20201011072729) do
     t.integer "base_id"
     t.string "name"
     t.string "attendance"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_bases_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
+    t.string "affiliation"
+    t.integer "employee_number"
+    t.string "uid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "password_digest"
     t.string "remember_digest"
+    t.boolean "superior", default: false
     t.boolean "admin", default: false
-    t.string "department"
-    t.datetime "basic_time", default: "2020-07-09 23:00:00"
-    t.datetime "work_time", default: "2020-07-09 22:30:00"
+    t.time "basic_work_time", default: "2000-01-01 23:00:00"
+    t.time "designated_work_start_time", default: "2000-01-01 00:00:00"
+    t.time "designated_work_end_time", default: "2000-01-01 09:00:00"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

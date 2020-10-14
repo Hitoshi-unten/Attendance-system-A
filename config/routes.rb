@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'bases/index'
 
   root 'static_pages#top'
   # 最初に設定したトップページは、このアプリケーションの初期ページとなるのでroot設定に割り当てることにする。
@@ -26,32 +25,30 @@ Rails.application.routes.draw do
 
  # アプリケーションに新しくリソースを作成する。ここで言う「リソース」とは、記事、人、動物などのよく似たオブジェクト同士が集まったものを指す。 リソースに対して作成 (create)、読み出し (read)、更新 (update)、削除 (destroy) の4つの操作を行なうことができるようになっており、これらの操作の頭文字を取ってCRUDと呼ぶ。
  # Railsのルーティングにはresourcesメソッドがあり、これを用いてRESTリソースへの標準的なルーティングを宣言できる。
- # コマンドラインでrails routesコマンドを実行すると、標準的なRESTfulアクションへのルーティングがすべて定義されていることが確認できる。ここでご注目いただきたいのは、Railsは「users」というリソース名から単数形の「user」を推測し、両者をその意味にそって使い分けているという点。prefix列で単一の項目には単数形のuser、複数項目を扱う場合には複数形のusersが使われているという具合。
+ # コマンドラインでrails routesコマンドを実行すると、標準的なRESTfulアクションへのルーティングがすべて定義されていることが確認できる。ここで注目なのは、Railsは「users」というリソース名から単数形の「user」を推測し、両者をその意味にそって使い分けているという点。prefix列で単一の項目には単数形のuser、複数項目を扱う場合には複数形のusersが使われているという具合。
  # コントローラの内側で定義されたメソッドは、コントローラのアクションになる。このアプリケーションではアクションがuserに対するCRUD操作を担当する。
   resources :users do
     member do
-      get 'edit_basic_info'
+      get 'edit_basic_info' # 基本情報ページ
       patch 'update_basic_info'
       get 'attendances/edit_one_month' # 勤怠編集ページ
-      patch 'attendances/update_one_month'  # まとめて更新 # 注目すべきは、コントローラがattendancesと設定されている点。Userリソースに含まれるよう設定したが、attendances/...と記述することによってattendances_edit_one_month_user_pathとルーティングの設定を追加することが可能。URLはusers/1/attendances/edit_one_monthと直感的になる。
+      patch 'attendances/update_one_month'  # まとめて更新 # 注目すべきは、コントローラがattendancesと設定されている点。Userリ����ースに含まれるよう設定したが、attendances/...と記述することによってattendances_edit_one_month_user_pathとルーティングの設定を追加することが可能。URLはusers/1/attendances/edit_one_monthと直感的になる。
     end
     collection do
-      get 'list_of_employees'
+      get 'list_of_employees' # 出勤社員一覧
     end
     resources :attendances, only: :update # AttendanceリソースとしてはupdateアクションのみでOKでonlyオプションを指定することで、updateアクション以外のルーティングを制限できる。
     # また、usersリソースのブロック内に記述しているため、設定されるルーティングは次のようになる。HTTP PATCH URL /users/:user_id/attendances/:id PATH user_attendance_path コントローラ#アクション attendances#update
     # これならユーザーに紐づいた勤怠データを作成するイメージが付きやすい。また、URL内に:user_idが含まれている点にも注目で、これによりparams[:user_id]でユーザーIDが取得できる。
-    resources :bases
-      member do
-        get 'bases', to: 'bases#index'
-        get 'edit_base_info', to: 'bases#edit_base_info'
-        get '/new', to: 'bases#create'
-        delete '/destroy', to: 'base#destroy'
-        patch 'bases/update_base_info'
-      end
-
+    #resources :bases 
+      #member do
+        
   end
+  resources :bases
 end
+
+        
+
 
  #HTTP	URL	アクション	ルーティングヘルパー	目的
  #GET	/users	index	users_path	ユーザーを一覧表示するページ
