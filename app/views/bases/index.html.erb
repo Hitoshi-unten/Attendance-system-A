@@ -13,45 +13,17 @@
   </tr>
   
   <% @bases.each do |base| %>
-    <!--<tr>-->
-    <!--  <td>-->
-        
-          <!--<div class="modal fade" id="post" tabindex="-1" role="dialog" aria-hidden="true">-->
-          <!--  <div class="modal-dialog" role="document">-->
-          <!--    <div class="modal-content">-->
-          <!--      < %= form_with(model: @base, url: basis_path(base), local: true, method: :patch) do |f| %>-->
-                  <!--<table class="table table-bordered table-condensed user-table">-->
-                    <tr>
-                      <td>
-                        <%= link_to "修正", '#', class: "btn btn-primary" %>
-                        <!--<button type="button" class="btn btn-primary mt-5" data-toggle="modal" data-target="#post">編集</button>-->
-                      </td>
-                      <td>
-                        <%= link_to "削除", '#', class: "btn btn-primary", data: {confirm: "削除してよろしいですか？" } %>
-                      </td>
-                      <td><%= base.base_id %></td>
-                      <td><%= base.name %></td>
-                      <td><%= base.attendance %></td>
-                          
-                      <!--<td>-->
-                      <!--  <button type="button" class="btn btn-primary mt-5" data-toggle="modal" data-target="#post">編集</button>-->
-                      <!--</td>-->
-                    </tr>
-                  <!--  <div class="modal-footer">-->
-                  <!--    <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>-->
-                  <!--    < %= f.submit :"編集", class: "btn btn-primary" %>-->
-                  <!--  </div>-->
-      <!--            </table>-->
-      <!--          < % end %>-->
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--    </div>-->
-      <!--</td>-->
-      
-    <!--  <td>< %= base.id %></td>-->
-    <!--  <td>< %= base.name %></td>-->
-    <!--  <td>< %= base.attendance_sort %></td>-->
-    <!--</tr>-->
+    <tr>
+      <td>
+        <%= link_to "修正", edit_basis_path(base), class: "btn btn-primary" %>
+      </td>
+      <td>
+        <%= link_to "削除", basis_path(base), method: :delete, class: "btn btn-primary", data: {confirm: "削除してよろしいですか？" } %>
+      </td>
+      <td><%= base.base_id %></td>
+      <td><%= base.name %></td>
+      <td><%= base.attendance %></td>
+    </tr>
   <% end %>
 </table>
 

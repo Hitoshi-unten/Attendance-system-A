@@ -3,7 +3,6 @@ class BasesController < ApplicationController
   before_action :admin_user
   
   def index
-    #@base = Base.new
     @bases = Base.all.order('base_id ASC')
   end
   
@@ -26,6 +25,7 @@ class BasesController < ApplicationController
   end
 
  def edit
+   @base = Base.find(params[:id])
  end
 
  def update
