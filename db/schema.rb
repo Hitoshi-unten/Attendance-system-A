@@ -27,10 +27,8 @@ ActiveRecord::Schema.define(version: 20201011072729) do
     t.integer "base_id"
     t.string "name"
     t.string "attendance"
-    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_bases_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|

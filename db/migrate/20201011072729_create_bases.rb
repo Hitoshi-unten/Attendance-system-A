@@ -4,8 +4,7 @@ class CreateBases < ActiveRecord::Migration[5.1]
       t.integer :base_id
       t.string :name
       t.string :attendance
-      t.references :user, foreign_key: true
-
+      
       t.timestamps
     end
   end

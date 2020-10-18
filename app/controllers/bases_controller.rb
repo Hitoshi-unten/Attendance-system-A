@@ -20,7 +20,7 @@ class BasesController < ApplicationController
       redirect_to bases_url
     else
       flash[:danger] = '拠点情報は追加されませんでした。'
-      render :index
+      redirect_to bases_url
     end
   end
 
@@ -34,7 +34,7 @@ class BasesController < ApplicationController
      redirect_to bases_url
    else
      flash[:danger] = "拠点情報は更新されませんでした。"
-     render :index
+     redirect_to bases_url
    end
  end
   
