@@ -1,36 +1,21 @@
-# ユーザーに関する機能の準備として、ユーザー登録ページへのルーティングを設定する。
-# そのためにはコントローラが必要で、これはWebアプリユーザー登録を行えるようにするための、重要な最初の一歩となる。
-# ユーザーのモデリングを行い、ユーザーの登録機能を完成させる。
-# rails g controller Users new をターミナルで実行しUsersコントローラを作成する。
-# 新しく作られたUsersコントローラファイルにnewアクションが生成されている。newアクションに対応したビューファイル（new.html.erb）も生成されている。
-# 生成されたファイルからもわかるように、新規ユーザー登録用のページが/users/newに出来た。
-# 次はルーティングヘルパーを設定する。
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
+  # このように記述することで、editとupdateアクションが実行される直前にlogged_in_userメソッドが実行されるようになる。
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
+  # 【admin_user】＝「管理者は遷移可」
   before_action :admin_or_correct_user, only: [:show, :update, :edit_one_month, :update_one_month]
+  # 【admin_or_correct_user】＝「管理者は遷移可」または「遷移したいページが現在ログインしているユーザー自身のページだった場合遷移可」というメソッド。
   before_action :set_one_month, only: :show
-  #before_action :limitation_login_user, only: [:new, :create, :login_page, :login]
-  #before_action :メソッド名〜と記述することで、全てのアクションが実行される直前に、ここで指定したアクションが実行されることとなる。
-  #set_userを指定しているのでbefore_actionメソッドは同じコントローラ内にあるset_userを実行するという流れ。
-  #その結果、全アクションでまずは #@current_userを定義しようとし、@current_userが存在すればログイン状態、nilならログアウト状態ということがわかるようになります。
-  #onlyオプションで実行したいアクションのみ記述することができる。
+  # before_action :メソッド名〜と記述することで、全てのアクションが実行される直前に、ここで指定したアクションが実行されることとなる。
+  # set_userを指定しているのでbefore_actionメソッドは同じコントローラ内にあるset_userを実行するという流れ。
+  # その結果、全アクションでまずは #@current_userを定義しようとし、@current_userが存在すればログイン状態、nilならログアウト状態ということがわかるようになります。
+  # onlyオプションで実行したいアクションのみ記述することができる。
 
   def index #(一覧画面)
-    @users = if params[:search]
-      # ビューで使う変数はアクション内に定義する。変数に「＠」が付いている事にも意味がある。def [アクション名] ... endの間に変数を定義することができる
-      # Railsでは、変数名を「@」から始めることでその変数を「インスタンス変数」として定義することが出来る。そしてこのインスタンス変数をビューで使用することができる。「＠」をつけない場合、その変数はローカル変数となり、ビューで変数を使おうとしてもスコープ（変数が使える範囲）から外れてしまい使用することが出来ない。
-      # searchされた場合は、原文+.where('name LIKE ?', "%#{params[:search]}%")を実行
-      User.paginate(page: params[:page]).where('name LIKE ?', "%#{params[:search]}%")
-      # ページネーション機能を追加することで１ページあたりに表示するユーザーの件数を制限する。
-      # indexアクションで定義している@usersに代入しているUser.allを、ページネーションを判定できるオブジェクトに置き換えている。
-      # paginateではキーが:pageで値がページ番号のハッシュを引数にとる。User.paginateは:pageパラメータに基づき、データベースからひとかたまりのデータを取得する。（デフォルトで30件で、設定や個別に指定可能）
-    else
-      # searchされていない場合は、原文そのまま
-      User.paginate(page: params[:page])
-    end
+    @users = User.all
+    # 全てのユーザーを表示するため、全ユーザーが代入されたインスタンス変数を定義して代入している。定義したインスタンス変数名は全てのユーザーを代入した複数形であるため@usersとしている。
   end
 
   def show # (特定の投稿を表示する画面)
@@ -55,7 +40,7 @@ class UsersController < ApplicationController
 
   # フォームを送信すると、フォームに含まれるフィールドはパラメータ（params）としてRailsに送信される。これらのパラメーターは、受けとったコントローラ内のアクションで参照可能となっており、これを用いて特定のタスクを実行する。
   # ここでrenderメソッドは非常に単純なハッシュを引数にとる。ハッシュのキーはnew、ハッシュの値は・・・。
-  # paramsメソッドは、フォームから送信されてきたパラメータ（つまりフォームのフィールド）を表すオブジェクト。paramsメソッドは、ActionController：：Parametersオブジェクトを返す。文字列またはシンボルを使って、このオブジェクトのハッシュのキーを指定できる。
+  # paramsメソッドは、フォームから送信されてきたパラメー���（つまりフォームのフィールド）を表すオブジェクト。paramsメソッドは、ActionController：：Parametersオブジェクトを返す。文字列またはシンボルを使って、このオブジェクトのハッシュのキーを指定���きる。
   # paramsメソッドは今後多用することになるのでしっかり理解しておく。http://www.example.com/?username=dhh&email=dhh@email.com���いうURLで説明すると、params[:username]の値が「dhh」、params[:email]の値が「dhh@email.com」となる。
   # Railsのすべてのモデルは初期化時に属性(フィールド)を与えられ、それらはデータベースカラムに自動的に対応付けられる。メソッドの1行目ではまさにそれが行われている (取り出したい属性はparamsの中にある)。次の@user.saveで、このモデルをデータベースに保存する。最後に、ユーザーをshowアクションにリダイレクトする (showアクションはこの後定義する)。訳注: モデルを保持している@userを指定するだけで、そのモデルを表示するためのshowアクションにリダイレクトされる点に注目。
   # TIPS: userが小文字で統一されているのに、User.newのUだけなぜ大文字なのか気になる方へ: これはapp/models/user.rbで定義されているUserクラスを表します。Rubyのクラス名は大文字で始めなければなりません。
@@ -75,7 +60,7 @@ class UsersController < ApplicationController
   end
 
 # 「リダイレクトするときは..._urlと指定する」とだけ覚えておく
-  def destroy # (投稿の削除)
+  def destroy # (投稿の��除)
     @user.destroy
     flash[:success] = "#{@user.name}のデータを削除しました。"
     redirect_to users_url
@@ -137,7 +122,7 @@ class UsersController < ApplicationController
  # なくコピーし続けている)。
  # findメソッドを使ってユーザーオブジェクトを取得し、インスタンス変数に代入。
  # ユーザーのidの取得ではparamsを使っています。
- # Usersコントローラにリクエストが送信されると、上記のparams[:id]は/users/1の1に置き換わる。
+ # Usersコントローラにリクエストが送信される��、上記のparams[:id]は/users/1の1に置き換わる。
  # ���まり、User.find(params[:id])は、User.find(1)となる。
  # /users/1というURLと、デバッグ情報にあるid: '1'からidが一致していることが確認できる。
  # つまり、/users/2でアクセスすれば、idが2のユーザーを取得し、表示しようとするページとなる。

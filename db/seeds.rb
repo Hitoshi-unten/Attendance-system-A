@@ -2,9 +2,21 @@
 
 User.create!(name: "Sample User",
              email: "sample@email.com",
+             admin: true,
              password: "password",
-             password_confirmation: "password",
-             admin: true)
+             password_confirmation: "password")
+             
+User.create!(name: "上長A",
+             email: "sampleA@email.com",
+             superior: true,
+             password: "password",
+             password_confirmation: "password")
+
+User.create!(name: "上長B",
+             email: "sampleB@email.com",
+             superior: true,
+             password: "password",
+             password_confirmation: "password")
 
 60.times do |n|
   name  = Faker::Name.name

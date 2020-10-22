@@ -1,82 +1,42 @@
 <% provide(:title, 'All Users') %>
-<% if params[:search] %>
-  <h1>検索結果</h1>
-<% elsif params[:search].blank? %>
+<!--< % if params[:search] %>-->
+<!--  <h1>検索結果</h1>-->
+<!--< % elsif params[:search].blank? %>-->
   <h1>ユーザー一覧</h1>
   <p>検索</p>
   <form enctype="multipart/form-data" action="/import" accept-charset="UTF-8" method="post">
     <input name="utf8" type="hidden" value="✔︎">
     <input type="hidden" name="authenticity_token" value=>
     <input type="file" name="file" id="file">
-    <input type="submit" name="commit" value="インポート" data-disable-with="インポート" disabled>
+    <input type="submit" name="commit" value="インポート" data-disable-with="インポート">
   </form>
-<% end %>
-<!--< % ... %>と記述することで、ビューでRubyのコードを記述できる。 変数を定義しているだけなので、ページには何も表示されません。-->
-<!--<div class="row">-->
-  <!--<div class="col-md-10 col-md-offset-8">-->
-    <!--<p>ユーザー名検索</p>-->
-    <!--< %= form_tag(users_path, :method => 'get') do %>-->
-      <!--< %= text_field_tag :search %>-->
-      <!--< %= submit_tag '検索', :name => nil %>-->
-    <!--< % end %>-->
-  <!--</div>-->
-<!--</div>-->
-<!--< %= ... %>と記述することで、ビューでRubyのコードを記述できる。値を出力する場合は、< %=...%>と記述する。-->
-
-<!--<div class="col-md-10 col-md-offset-1">-->
-  <!--< %= will_paginate %>-->
-  <!--<table class="table table-condensed table-hover" id="table-users">-->
-    <!--<thead>-->
-      <!--<tr>-->
-        <!--<th>< %= User.human_attribute_name :name %></th>-->
-        <!--<th class="center">< %= User.human_attribute_name :department %></th>-->
-        <!--< % if current_user.admin? %>-->
-          <!--<th class="center">< %= User.human_attribute_name :basic_time %></th>-->
-          <!--<th class="center">< %= User.human_attribute_name :work_time %></th>-->
-        <!--< % end %>-->
-        <!--<th></th>-->
-      <!--</tr>-->
-    <!--</thead>-->
-<!--@users(配列)を、eachメソッドで繰り返し処理しています。usersテーブルには複数のデータがあり処理が実行されるイメージ。その処理中は、「user」というブロック変数が使用できる。「user」には、usersテーブルのデータが１件入っている。-->
-<!--ユーザーを一覧表示するためのeach文を追加するコード-->
-    <!--< % @users.each do |user| %>-->
-      <!--<tr>-->
-        <!--<td>-->
-          <!--< % if current_user.admin? %>-->
-          <!--パスはターミナルを使用するか、サーバーを起動した状態で、アプリケーションとは別にブラウザタブを開き、ブラウザで表示することで確認することができる。次のコマンドをターミナルで実行する rails routes-->
-          <!--ブラウザでのルーティングヘルパー確認方法は、ブラウザのアドレスバーの末尾に/rails/infoと入力し、更新する。-->
-            <!--< %= link_to user.name, user %>-->
-            <!--文法は< %= link_to [リンクの名前], [URLまたはルーティングヘルパー] %>-->
-            <!--link_toメソッドは、Railsのビルトインヘルパーの1つ。このメソッドは、指定されたテキストに基いたリンクを作成し、ジャンプ先を表示する。ここでは各記��へのパスを指定している。-->
-          <!--< % else %>-->
-          <!-- ユーザー名を表示するコード -->
-            <!--< %= user.name %>-->
-          <!--< % end %>-->
-        <!--</td>-->
-        <!--<td class="center">< %= user.department.present? ? user.department : "未所属" %></td>-->
-        <!--< % if current_user.admin? %>-->
-          <!--<td class="center">< %= format_basic_info(user.basic_time) %></td>-->
-          <!--<td class="center">< %= format_basic_info(user.work_time) %></td>-->
-        <!--< % end %>-->
-        <!--<td class="center">-->
-          <!--< % if current_user.admin? && !current_user?(user) %>-->
-            <!--< %= link_to "基本情報編集", edit_basic_info_user_path(user), remote: true, class: "btn btn-success" %>-->
-            <!--< %= link_to "基本情報編集", edit_basic_info_user_path(user), class: "btn btn-success" %>-->
-            <!--この「基本情報編集」リンクをクリックするとフォームが表示され、そこで新しい記事を作成することができるようになる。-->
-            <!--< %= link_to "削除", user, method: :delete,-->
-                <!--data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>-->
-                <!--上で追加したコードでは、link_toメソッドの使い方がこれまでと違っていることに注意。2番目の引数で名前付きルートを渡している点はこれまでと同じだが、その後に別の引数がある。
-                このmethod: :deleteオプションとdata: { confirm: '削除してよろしいですか？' }オプションはHTML5の属性です。このリンクをクリックすると、本当に削除してよいかどうかを確認する
-                メッセージを表示し、その後deleteメソッドとリンクを送信します。このダイアログボックスの表示はrails-ujsというJavaScriptファイルによって自動的に行われます。このファイルは
-                アプリケーションの生成時に自動的にアプリケーションレイアウト (app/views/layouts/application.html.erb) に含まれます。このJavaScriptファイルがないと、ダイアログボックスは
-                表示されません。-->
-          <!--< % end %>-->
-        <!--</td>-->
-      <!--</tr>-->
-    <!--< % end %>-->
-  <!--</table>-->
-  <!--< %= will_paginate %>-->
-<!--</div>-->
-
+    <table class="table">
+      <% @users.each do |user| %>
+        <tr>
+          <td>
+            <div class="col-md-22 col-md-offset-1">
+            <% if current_user.admin? && !current_user?(user) %>
+            <%= user.name %><br>
+              <%= link_to "削除", user, method: :delete,
+                             data: { confirm: "削除してもよろしいですか?" },
+                             class: "btn btn-primary btn-default" %><br>
+              <div class="panel-group">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <button type="button" data-toggle="collapse" data-target="#collapse<%= user.id %>" class="panel-collapse collapse"></button>
+                    </h4>
+                  </div>
+                  <div id="collapse<%= user.id %>" class="panel-collapse collapse">
+                    <div class="panel-body"><%= render 'users/form1', locals:{ user: user } %></div>
+                  </div>
+                </div>
+              <% end %>
+              </div>
+            </div>
+          </td>
+        </tr>
+      <% end %>    
+    </table>
 <!--モーダルウインドウ表示-->
-<!--<div id="edit-basic-info" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>-->
+<div id="edit-basic-info" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

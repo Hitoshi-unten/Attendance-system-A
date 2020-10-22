@@ -1,0 +1,38 @@
+<%= form_with(model: @user, local: true) do |f| %>
+<!--form_with メソッドを呼び出すときには、このフォームを識別するためのスコープを-->
+<!--渡してください。ここでは: @user というシンボルを渡します。form_with ヘルパー-->
+<!--は、これを見て何のフォームであるかを知ることができます。このメソッドのブロックの-->
+<!--内側は FormBuilder オブジェクトを置きます (form で表すのが通例です)。ここでは 2-->
+<!--つのラベルと 2 つのテキストフィールドが置かれ、それぞれタイトルと記事本文になりま-->
+<!--す。最後に、form オブジェクトに対して submit を実行すると、フォームの送信ボタン-->
+<!--が作成されます。-->
+ 
+  <%= f.label :name, class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :name, class: "form-control" %>
+
+  <%= f.label :email, class: "label-#{yield(:class_text)}" %>
+  <%= f.email_field :email, class: "form-control" %>
+
+  <%= f.label :affiliation, class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :affiliation, class: "form-control" %>
+
+  <%= f.label :employee_number, class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :employee_number, class: "form-control" %>
+
+  <%= f.label :uid, class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :uid, class: "form-control" %>
+
+  <%= f.label :password, class: "label-#{yield(:class_text)}" %>
+  <%= f.password_field :password, class: "form-control" %>
+
+  <%= f.label :basic_work_time, class: "label-#{yield(:class_text)}" %>
+  <%= f.time_field :basic_work_time, class: "form-control" %>
+
+  <%= f.label :designated_work_start_time, class: "label-#{yield(:class_text)}" %>
+  <%= f.time_field :designated_work_start_time, class: "form-control" %>
+
+  <%= f.label :designated_work_end_time, class: "label-#{yield(:class_text)}" %>
+  <%= f.time_field :designated_work_end_time, class: "form-control" %>
+
+  <%= f.submit "編集する", class: "btn btn-primary btn-block btn-#{yield(:class_text)}" %>
+<% end %>
