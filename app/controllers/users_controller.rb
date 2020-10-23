@@ -15,8 +15,24 @@ class UsersController < ApplicationController
 
   def index #(一覧画面)
     @users = User.all
-    # 全てのユーザーを表示するため、全ユーザーが代入されたインスタンス変数を定義して代入している。定義したインスタンス変数名は全てのユーザーを代入した複数形であるため@usersとしている。
+    if params[:name].present?
+       @users = @users.get_by_name params[:name]
+    end
+    if params[:id].present?
+       @user = User.find_by(id: @users.id)
+    else
+       @user = User.new
+    end
   end
+  
+  def import
+    #fileはtmpに自動で一時保存される
+    User.import(params[:file])
+    flash[:success] = "ユーザー情報をインポートしました。"
+    redirect_to users_url
+  end
+    
+    # 全てのユーザーを表示するため、全ユーザーが代入されたインスタンス変数を定義して代入している。定義したインスタンス変数名は全てのユーザーを代入した複数形であるため@usersとしている。
 
   def show # (特定の投稿を表示する画面)
     # countメソッドは配列の要素数を取得することができる。今回はwhere.notを用いて、記述している。
@@ -66,6 +82,9 @@ class UsersController < ApplicationController
     redirect_to users_url
   end
   
+  def edit_basic_info
+  end
+  
   def update_basic_info
     if @user.update_attributes(basic_info_params)
       flash[:success] = "#{@user.name}の基本情報を更新しました。"
@@ -87,8 +106,8 @@ class UsersController < ApplicationController
 
   private
 
-    def user_params
-      params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
+    def user_params #ユーザーの送信情報を制御するuser_params
+      params.require(:user).permit(:name, :email, :affiliation, :employee_number, :uid, :password, :basic_work_time, :designated_work_start_time, :designated_work_end_time) # (:name, :email, :department, :password, :password_confirmation)
     end
     
     def basic_info_params
