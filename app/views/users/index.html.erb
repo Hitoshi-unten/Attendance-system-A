@@ -3,13 +3,18 @@
 <!--  <h1>検索結果</h1>-->
 <!--< % elsif params[:search].blank? %>-->
   <h1>ユーザー一覧</h1>
-  <p>検索</p>
-  <form enctype="multipart/form-data" action="/import" accept-charset="UTF-8" method="post">
-    <input name="utf8" type="hidden" value="✔︎">
-    <input type="hidden" name="authenticity_token" value=>
-    <input type="file" name="file" id="file">
-    <input type="submit" name="commit" value="インポート" data-disable-with="インポート">
-  </form>
+  
+  <%= form_tag "#", multiport: true do %>
+    <%= file_field_tag :file %>
+    <%= link_to "csvをインポート", "#", class: "btn btn-primary" %>
+  <% end %>
+  <!--<p>検索</p>-->
+  <!--<form enctype="multipart/form-data" action="/import" accept-charset="UTF-8" method="post">-->
+  <!--  <input name="utf8" type="hidden" value="✔︎">-->
+  <!--  <input type="hidden" name="authenticity_token" value=>-->
+  <!--  <input type="file" name="file" id="file">-->
+  <!--  <input type="submit" name="commit" value="インポート" data-disable-with="インポート">-->
+  <!--</form>-->
     <table class="table">
       <% @users.each do |user| %>
         <tr>
