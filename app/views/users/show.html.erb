@@ -1,5 +1,5 @@
 <% provide(:title, @user.name) %>
-<!--ビューの役割は、この情報をユーザーが読める形式で表示すること。ここで気を付けたい重要な違いは、表示する情報を集めるのは コントローラ であって、ビューではないということ。ビューは、コントローラが作成した情報に対して余計なことをせずに表示する必要がある。-->
+<!--ビューの役割は、この情報をユーザーが読める形式で表示すること。ここで気を付けたい重要な違いは、表示する情報を集めるのは コントローラであって、ビューではないということ。ビューは、コントローラが作成した情報に対して余計なことをせずに表示する必要がある。-->
 <div>
   <table class="table table-bordered user-table">
     <tr>
@@ -14,9 +14,11 @@
         <%= l(@first_day, format: :middle) %>   時間管理表
         <%= link_to "︎︎︎⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-right" %>
       </td>
-      <td>基本勤務時間：<%= format_basic_info(@user.basic_work_time) %></td>
-      <td>指定勤務開始時間：<%= format_basic_info(@user.designated_work_start_time) %></td>
-      <td>指定勤務終了時間：<%= format_basic_info(@user.designated_work_end_time) %></td>
+      <td>
+          指定勤務開始時間：<%= format_basic_info(@user.designated_work_start_time) %><br>
+          指定勤務終了時間：<%= format_basic_info(@user.designated_work_end_time) %><br>
+      </td>
+      <td colspan="2">基本勤務時間：<%= format_basic_info(@user.basic_work_time) %></td>
       <td>初日：<%= l(@first_day, format: :short) %></td>
       <!--lは小文字のエル（L)です。2つ目の引数にformat::〜と記述することで、指定のフォーマットを指定できる。引数を指定しなかった場合はformat::defaultとして処理される。-->
     </tr>
