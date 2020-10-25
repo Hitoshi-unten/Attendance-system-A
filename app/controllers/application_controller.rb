@@ -87,7 +87,7 @@ class ApplicationController < ActionController::Base
         # 内部ではone_monthに対してeachメソッドを呼び出している。
         # ブロックに対してはdayブロック変数を定義している。
         # このdayブロック変数が、ブロック内の@user.attendances.create!(worked_on: day)で呼び出せる仕組みになっている。
-　　　　# ここでは1ヶ月分の日付が繰り返し処理されて実行されており、createメソッドによってworked_onに日付の値が入ったAttendanceモデルのデータが生成されている。
+        # ここでは1ヶ月分の日付が繰り返し処理されて実行されており、createメソッドによってworked_onに日付の値が入ったAttendanceモデルのデータが生成されている。
         one_month.each do |day|
           @user.attendances.create!(worked_on: day)
         end

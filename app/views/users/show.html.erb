@@ -14,15 +14,15 @@
         <%= l(@first_day, format: :middle) %>   時間管理表
         <%= link_to "︎︎︎⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-right" %>
       </td>
-      <td>指定勤務時間：<%= format_basic_info(@user.work_time) %></td>
-      <td>基本時間：<%= format_basic_info(@user.basic_time) %></td>
-      <td></td>
+      <td>基本勤務時間：<%= format_basic_info(@user.basic_work_time) %></td>
+      <td>指定勤務開始時間：<%= format_basic_info(@user.designated_work_start_time) %></td>
+      <td>指定勤務終了時間：<%= format_basic_info(@user.designated_work_end_time) %></td>
       <td>初日：<%= l(@first_day, format: :short) %></td>
       <!--lは小文字のエル（L)です。2つ目の引数にformat::〜と記述することで、指定のフォーマットを指定できる。引数を指定しなかった場合はformat::defaultとして処理される。-->
     </tr>
     
     <tr>
-      <td>所属：<%= @user.department.present? ? @user.department : "未所属" %></td>
+      <td>所属：<%= @user.affiliation.present? ? @user.affiliation : "未所属" %></td>
       <td>氏名：<%= @user.name %></td>
       <!--このビューでは、埋め込みRuby（ERB）を使用してユーザーの名前とメールアドレスを表示する。-->
       <!--@で始まる@userというオブジェクトはインスタンス変数という変数のうちのひとつ。-->
@@ -115,7 +115,7 @@
       </tr>
       <tr>
         <td colspan="2"><%= @attendances.count %></td>
-        <td colspan="2"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
+        <td colspan="2"><%= format_basic_info(@user.basic_work_time).to_f * @worked_sum %></td>
         <!--今回の総合勤務時間は[work_time]*[出勤日数]の結果を意味する。つまり、ユーザーの出勤日数から想定した勤務時間の累計になる。-->
         <!--勤怠基本情報は、showアクション内ですでに@user変数として代入されている。そして出勤日数も同様に、@worked_sum変数に代入されている。計算に必要な両方の価が取得可能な状態なので、あとは計算するだけとなる。-->
       　<!--式の右側の@worked_sumの値はそのまま計算できるが、左側に関してはformat_basic_infoでの戻り値がstringクラスになるためそのままだとうまく計算されない。文字列と数値はそのまま計算しても期待する結果は返ってこない。

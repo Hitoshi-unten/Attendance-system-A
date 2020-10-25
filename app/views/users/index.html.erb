@@ -4,10 +4,12 @@
 <!--< % elsif params[:search].blank? %>-->
   <h1>ユーザー一覧</h1>
   
-  <%= form_tag "#", multiport: true do %>
-    <%= file_field_tag :file %>
-    <%= link_to "csvをインポート", "#", class: "btn btn-primary" %>
-  <% end %>
+  <div class="csv_import">
+    <%= form_tag import_users_path, method: :post, multipart: true do %>
+      <%= file_field_tag :file %>
+      <%= submit_tag "CSVインポート", class: "btn btn-primary" %>
+    <% end %>
+  </div>
   <!--<p>検索</p>-->
   <!--<form enctype="multipart/form-data" action="/import" accept-charset="UTF-8" method="post">-->
   <!--  <input name="utf8" type="hidden" value="✔︎">-->

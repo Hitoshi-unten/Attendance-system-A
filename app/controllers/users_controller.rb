@@ -16,12 +16,12 @@ class UsersController < ApplicationController
   def index #(一覧画面)
     @users = User.all
     if params[:name].present?
-       @users = @users.get_by_name params[:name]
+      @users = @users.get_by_name params[:name]
     end
     if params[:id].present?
-       @user = User.find_by(id: @users.id)
+      @user = User.find_by(id: @users.id)
     else
-       @user = User.new
+      @user = User.new
     end
   end
   
