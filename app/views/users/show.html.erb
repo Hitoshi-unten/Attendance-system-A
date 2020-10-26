@@ -45,20 +45,32 @@
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
       <tr>
-        <th rowspan="2">日付</th>
-        <th rowspan="2">曜日</th>
-        <th colspan="3">出勤</th>
-        <th colspan="3">退勤</th>
-        <th rowspan="2">在社時間</th>
-        <th rowspan="2">備考</th>
+        <th rowspan="2"></th>
+        <th rowspan="3">日付</th>
+        <th rowspan="3">曜日</th>
+        <th colspan="8">【実績】</th>
+        <th colspan="5">所定外勤務</th>
       </tr>
       <tr>
+        <th colspan="3">出社</th>
+        <th colspan="3">退社</th>
+        <th rowspan="2">在社時間</th>
+        <th rowspan="2">備考</th>
+        <th colspan="2">終了予定時間</th>
+        <th rowspan="2">時間外時間</th>
+        <th rowspan="2">業務処理内容</th>
+        <th rowspan="2">指示者確認</th>
+      </tr>
+      <tr>
+        <th>残業申請</th>
         <th>時</th>
         <th>分</th>
         <th></th>
         <th>時</th>
         <th>分</th>
         <th></th>
+        <th>時</th>
+        <th>分</th>
       </tr>
     </thead>
     
@@ -69,6 +81,7 @@
       <% @attendances.each do |day| %>
         <tr>
           <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。-->
+          <td></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td>
             <!--wdayメソッドを使うことで、何番目（日曜から始まり0から数える）の曜日か確認できる。-->
@@ -110,21 +123,23 @@
       <!--表示領域には、・１ヶ月分の合計日数、・出勤した日付だけのwork_time（勤務時間）累計、・在社時間の累計 以上を表記する。-->
       <!--rowspan:縦結合、colspan：横結合-->
       <tr>
-        <td colspan="2">累計日数</td>
-        <td colspan="2">総合勤務時間</td>
-        <td colspan="2">累計在社時間</td>
-        <td rowspan="2"></td>
+        <td rowspan="3"></td>
+        <td colspan="2"></td>
+        <td colspan="6"></td>
+        <td></td>
+        <td colspan="5"></td>
+        <td></td>
       </tr>
-      <tr>
-        <td colspan="2"><%= @attendances.count %></td>
-        <td colspan="2"><%= format_basic_info(@user.basic_work_time).to_f * @worked_sum %></td>
+      <!--<tr>-->
+      <!--  <td rowspan="3">< %= @attendances.count %></td>-->
+      <!--  <td rowspan="3">< %= format_basic_info(@user.basic_work_time).to_f * @worked_sum %></td>-->
         <!--今回の総合勤務時間は[work_time]*[出勤日数]の結果を意味する。つまり、ユーザーの出勤日数から想定した勤務時間の累計になる。-->
         <!--勤怠基本情報は、showアクション内ですでに@user変数として代入されている。そして出勤日数も同様に、@worked_sum変数に代入されている。計算に必要な両方の価が取得可能な状態なので、あとは計算するだけとなる。-->
       　<!--式の右側の@worked_sumの値はそのまま計算できるが、左側に関してはformat_basic_infoでの戻り値がstringクラスになるためそのままだとうまく計算されない。文字列と数値はそのまま計算しても期待する結果は返ってこない。
-      　そのため、to_fメソッドを追加。このメソッドは、文字列を浮動小数点数とみなしてFloatオブジェクトに変換する。to_iメソッド（文字列から整数に変換）の小数点付きバージョン。これで正常に計算結果を出力できるようになる。-->
-        <td colspan="2"><%= format("%.2f", @total_working_times.to_f) %></td>
+      <!--　そのため、to_fメソッドを追加。このメソッドは、文字列を浮動小数点数とみなしてFloatオブジェクトに変換する。to_iメソッド（文字列から整数に変換）の小数点付きバージョン。これで正常に計算結果を出力できるようになる。-->-->
+      <!--  <td colspan="2">< %= format("%.2f", @total_working_times.to_f) %></td>-->
         <!--こちらは計算結果を小数点第二位までフォーマットしている。-->
-      </tr>
+      <!--</tr>-->
     </tfoot>
   </table>
 </div>
