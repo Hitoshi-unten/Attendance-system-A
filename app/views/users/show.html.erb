@@ -95,6 +95,7 @@
                <%= $days_of_the_week[day.worked_on.wday] %>
             <% end %>
             <!--後置きのifによって、started_atの値が存在する場合のみ表示できるよう制御している。-->
+          </td>
           <td><%= format_hour(day.started_at) if day.started_at.present? %></td> 
           <td><%= format_min(day.started_at)  if day.started_at.present? %></td>
           <td>
@@ -114,6 +115,11 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
       <% end %>
     </tbody>

@@ -23,9 +23,9 @@ module AttendancesHelper
     if Date.current == attendance.worked_on
       # 繰り返し処理中の日付と、実際の日付における当日が一致することを条件としている。
       # 「勤怠データが当日、かつ出勤時間が存在しない場合」に'出勤'。
-      return '出勤' if attendance.started_at.nil?
+      return '出社' if attendance.started_at.nil?
       # 「勤怠データが当日、かつ出勤時間が登録済、かつ退勤時間が存在しない場合」に'退勤'。
-      return '退勤' if attendance.started_at.present? && attendance.finished_at.nil?
+      return '退社' if attendance.started_at.present? && attendance.finished_at.nil?
     end
     # どれにも当てはまらなかった場合はfalseを返します。
     # 「勤怠データが当日でない、または当日だが出勤時間も退勤時間も登録済の場合」にfalse。
