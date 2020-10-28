@@ -80,6 +80,11 @@ class AttendancesController < ApplicationController
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
     end
     
+    # 1日分の残業申請用
+    def overwork_request_params
+      params.require(:attendance).permit(:id, :scheduled_end_time, :work_description)
+    end
+    
     # beforeフィルター
     
     # 管理権限者、または現在ログインしているユーザーを許可します。

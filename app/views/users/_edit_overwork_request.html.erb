@@ -1,0 +1,55 @@
+
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&time;</span>
+      </button>
+      <h4 class="modal-title">【残業申請】</h4>
+    </div>
+    
+    <div class="modal-body">
+      <%= form_with(Model: @attendance, url: attendances_update_overwork_request_user_path, method: :post) do |f| %>
+      
+      <table class="table table-bordered table-striped table-overwork">
+        <thead>
+          <tr>
+            <th>日付</th>
+            <th>曜日</th>
+            <th>終了予定時間</th>
+            <th>翌日</th>
+            <th>業務処理内容</th>
+            <th>指示者確認㊞</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+          
+          <tr>
+            <td class="table-overwork"><%= @day %></td>
+            <td>
+            <% if @day.wday == 0 %>
+              <font color="red">日</font>
+            <% elsif @day.wday == 1 %>
+              <font color="black">月</font>
+            <% elsif @day.wday == 2 %>
+              <font color="black">月</font>
+            <% elsif @day.wday == 3 %>
+              <font color="black">月</font>
+            <% elsif @day.wday == 4 %>
+              <font color="black">月</font>
+            <% elsif @day.wday == 5 %>
+              <font color="black">月</font>
+            <% elsif @day.wday == 6 %>
+              <font color="blue">月</font>
+            <% end %>
+            </td>
+            <td><%= f.time_field :scheduled_end_time, class: "form-control" %></td>
+            <td><%= check_box_tag :check %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>  
+</div>

@@ -59,7 +59,7 @@
         <th colspan="2">終了予定時間</th>
         <th rowspan="2">時間外時間</th>
         <th rowspan="2">業務処理内容</th>
-        <th rowspan="2">指示者確認</th>
+        <th rowspan="2">指示者確認㊞</th>
       </tr>
       <tr>
         <th>残業申請</th>
@@ -81,7 +81,7 @@
       <% @attendances.each do |day| %>
         <tr>
           <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。-->
-          <td></td>
+          <td><%= link_to "残業申請", edit_overwork_request_user_path(@user, params: { day: day.worked_on }), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td>
             <!--wdayメソッドを使うことで、何番目（日曜から始まり0から数える）の曜日か確認できる。-->
