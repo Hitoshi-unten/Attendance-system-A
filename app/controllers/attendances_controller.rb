@@ -13,6 +13,8 @@ class AttendancesController < ApplicationController
 # 今回は更新エラー用のテキストを2ヶ所で使用しているため、このように定義した。
 # 必ずこうしなければならないものではないが、例えばこれが10ヶ所、100ヶ所となったときにそれらの値をまとめて変更しなければならなくなったとする。
 # そのような時、定数として定義したものを使用していれば、一回の修正で済ませることができる。仮に文字列をそのまま代入していたとしたら・・・多ければ多いほど時間がかかることになる。
+# set_one_monthメソッドはページを出力する前に１ヶ月分のデータの存在を確認し、セットするためのメソッド。このメソッドをbeforeアクションとして実行することで、ページを開きたいのに１ヶ月分のデータがない状態を防ぐように対策した。
+# しかし、このset_one_monthメソッドをbefore_actionとして実行するだけだと不具合が発生する。メソッド内で呼び出している@userが定義されていないから。
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
   def update
@@ -73,6 +75,22 @@ class AttendancesController < ApplicationController
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
   
+  def edit_overwork_request
+    # URLのidにはattendanceのidが入っている
+    @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
+    @user = User.find(@attendance.user_id) #上記レコードのuser_idをもとにユーザー情報を探してくる
+  end
+
+  def update_overwork_request
+    @attendance = Attendance.find(params[:id])
+    if @attendance.update_attributes(overwork_params)
+      flash[:success] = "残業を申請しました。"
+    else
+      flash[:danger] = "申請をキャンセルしました。"
+    end
+    redirect_to user_url(@user)
+  end
+  
   private
   
     # 1ヶ月分の勤怠情報を扱います。
@@ -80,9 +98,9 @@ class AttendancesController < ApplicationController
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
     end
     
-    # 1日分の残業申請用
-    def overwork_request_params
-      params.require(:attendance).permit(:id, :scheduled_end_time, :work_description)
+    # 残業情報を扱う
+    def overwork_params
+      params.require(:attendance).permit(:finish_overwork, :next_day, :work_content, :instructor_confirmation)
     end
     
     # beforeフィルター

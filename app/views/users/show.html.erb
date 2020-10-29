@@ -81,6 +81,7 @@
       <% @attendances.each do |day| %>
         <tr>
           <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。-->
+          <!--文法< %= link_to[リンクの名前],[URLまたはルーティングヘルパー] %>-->
           <td><%= link_to "残業申請", edit_overwork_request_user_path(@user, params: { day: day.worked_on }), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td>
