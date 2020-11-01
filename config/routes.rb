@@ -34,8 +34,8 @@ Rails.application.routes.draw do
       patch 'update_basic_info'
       get 'attendances/edit_one_month' # 勤怠編集ページ
       patch 'attendances/update_one_month'  # まとめて更新 # 注目すべきは、コントローラがattendancesと設定されている点。Userリ����ースに含まれるよう設定したが、attendances/...と記述することによってattendances_edit_one_month_user_pathとルーティングの設定を追加することが可能。URLはusers/1/attendances/edit_one_monthと直感的になる。
-      post 'attendances/update_overwork_request'
       get 'edit_overwork_request'
+      patch 'update_overwork_request'
     end
     collection { post :import }
     collection do

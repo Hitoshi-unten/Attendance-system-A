@@ -119,7 +119,7 @@ class UsersController < ApplicationController
  # そこで、コントローラで渡されるパラメータはホワイトリストでチェックし、不正なマスアサ��ンメントを防がなければならない。この場合、createでパラメータを安全に扱うために、:name, :email, :department, :password, :password_confirmationパラメータの利用を「許可」し、かつ「必須」であることを指定したいのです。そのための構文によって、requireメソッドとpermitメソッドが導入される。
  # この記法を毎回繰り返すのは煩雑なので、��とえばcreateアクションとupdateアクションで共用できるようにこのメソッドをくくりだしておくのが普通。くくりだしたメソッドは、マスアサインメントを避けるだけでなく、外部から不正に呼び出されることのないようにprivate宣言の後に置いておく。
  # 各コントローラの標準的なCRUDアクションは、多くの場合index、show、new、edit、create、update、destroyの順で配置される。この順番でなくても構わないが、これらがいずれもpublicメソッドである点に注意する。コントローラのpublicメソッドはprivateより前に配置しなければならない。
-    
+
  # ログイン済みのユーザーか確認します。    
     def logged_in_user
       unless logged_in?
