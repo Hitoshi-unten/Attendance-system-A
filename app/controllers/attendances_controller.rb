@@ -77,13 +77,13 @@ class AttendancesController < ApplicationController
   
   def edit_overwork_request
     # URLのidにはattendanceのidが入っている
+    @user = User.find(params[:user_id]) #上記レコードのuser_idをもとにユーザー情報を探してくる
     @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
-    @user = User.find(@attendance.user_id) #上記レコードのuser_idをもとにユーザー情報を探してくる
   end
 
   def update_overwork_request
+    @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
-    @user = User.find(@attendance.user_id)
     if @attendance.update_attributes(overwork_params)
       flash[:success] = "残業を申請しました。"
     else
@@ -101,7 +101,7 @@ class AttendancesController < ApplicationController
     
     # 残業情報を扱う
     def overwork_params
-      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_content, :instructor_confirmation])[:attendances]
+      params.require(:attendance).permit(:finish_overwork, :next_day, :work_content, :instructor_confirmation)
     end
     
     # beforeフィルター

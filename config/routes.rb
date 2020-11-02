@@ -34,14 +34,17 @@ Rails.application.routes.draw do
       patch 'update_basic_info'
       get 'attendances/edit_one_month' # 勤怠編集ページ
       patch 'attendances/update_one_month'  # まとめて更新 # 注目すべきは、コントローラがattendancesと設定されている点。Userリ����ースに含まれるよう設定したが、attendances/...と記述することによってattendances_edit_one_month_user_pathとルーティングの設定を追加することが可能。URLはusers/1/attendances/edit_one_monthと直感的になる。
-      get 'edit_overwork_request'
-      patch 'update_overwork_request'
     end
     collection { post :import }
     collection do
       get 'list_of_employees' # 出勤社員一覧
     end
-    resources :attendances, only: :update # AttendanceリソースとしてはupdateアクションのみでOKでonlyオプションを指定することで、updateアクション以外のルーティングを制限できる。
+    resources :attendances, only: :update do # AttendanceリソースとしてはupdateアクションのみでOKでonlyオプションを指定することで、updateアクション以外のルーティングを制限できる。
+      member do
+        get 'edit_overwork_request'
+        patch 'update_overwork_request'
+      end
+    end
     # また、usersリソースのブロック内に記述しているため、設定されるルーティングは次のようになる。HTTP PATCH URL /users/:user_id/attendances/:id PATH user_attendance_path コントローラ#アクション attendances#update
     # これならユーザーに紐づいた勤怠データを作成するイメージが付きやすい。また、URL内に:user_idが含まれている点にも注目で、これによりparams[:user_id]でユーザーIDが取得できる。
     #resources :bases 

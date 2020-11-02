@@ -17,6 +17,10 @@ ActiveRecord::Schema.define(version: 20201011072729) do
     t.datetime "started_at"
     t.datetime "finished_at"
     t.string "note"
+    t.datetime "finish_overwork"
+    t.boolean "next_day"
+    t.string "work_content"
+    t.string "instructor_confirmation"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

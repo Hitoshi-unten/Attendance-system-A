@@ -82,7 +82,7 @@
         <tr>
           <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。-->
           <!--文法< %= link_to[リンクの名前],[URLまたはルーティングヘルパー] %>-->
-          <td><%= link_to "残業申請", edit_overwork_request_user_path(@user, params: { day: day.worked_on }), remote: true, class: "btn btn-primary" %></td>
+          <td><%= link_to "残業申請", edit_overwork_request_user_attendance_path(@user, day), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td>
             <!--wdayメソッドを使うことで、何番目（日曜から始まり0から数える）の曜日か確認できる。-->
@@ -152,4 +152,4 @@
 </div>
 
 <!--モーダルウインドウ表示-->
-<div id="edit_overwork_request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-overwork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

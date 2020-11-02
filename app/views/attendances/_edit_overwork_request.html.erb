@@ -6,7 +6,7 @@
       </button>
       <h1 class="modal-title">残業申請</h1>
       <div class="modal-body">
-        <%= form_with(model: @user, url: attendances_update_overwork_request_user_path(@user, @attendance), local: :true, method: :patch) do |f| %>
+        <%= form_with(model: @attendance, url: update_overwork_request_user_attendance_path(@user, @attendance), local: :true, method: :patch) do |f| %>
         <!--フォームを追加するのにRailsではform_withというヘルパーメソッドを使う。このメソッドはActive Recordのオブジェクトを取り込み、さらにそのオブジェクトの属性（カラム）を使ってフォームを自動的に構築してくれる便利なもの。-->
           <table class="table table-bordered table-striped overwork-application__table">
             <thead>
@@ -16,25 +16,26 @@
                 <th>終了予定時間</th>
                 <th>翌日</th>
                 <th>業務処理内容</th>
-                <th>指示者確認㊞</th>
+                <th>指示者確認
+                  <div class="maru size_small black">
+                   <div class="letter3">印</div> 
+                  </div>
+                </th>
               </tr>
             </thead>
             
             <tbody>
-              <!--<attendanceカラム名の更新>-->
-              <%= f.fields_for :attendances do |attendance| %>
-                <tr>
-                  <td><%= l(@attendance.worked.on, format: :short) %></td>
-                  <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
-                  <td><%= attendance.time_select :finish_overwork, { include_blank: true },class: "input-sm" %></td>
-                  <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>
-                  <td><%= attendance.text_field :work_content, class: "form-control" %></td>
-                  <td><%= attendance.select :instructor_confirmation, { "上長A": 1, "上長B": 2 },{ include_blank: true }, class: "form-control", required: true %></td>
-                </tr>
-              <% end %>
+              <tr>
+                <td><%= l(@attendance.worked_on, format: :short) %></td>
+                <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
+                <td><%= f.time_select :finish_overwork, { include_blank: true },class: "input-sm" %></td>
+                <td><%= f.check_box :next_day, {}, "true", "false" %></td>
+                <td><%= f.text_field :work_content, class: "form-control" %></td>
+                <td><%= f.select :instructor_confirmation, { "上長A": 1, "上長B": 2 },{ include_blank: true }, class: "form-control", required: true %></td>
+              </tr>
             </tbody>
           </table>
-         <%= f.submit "残業申請", class: "btn-btn-primary btn-block" %> 
+         <%= f.submit "変更を送信する", class: "btn-btn-primary btn-block" %> 
        </div>
       <% end %>
     </div>
