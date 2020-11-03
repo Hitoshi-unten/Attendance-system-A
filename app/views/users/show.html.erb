@@ -116,11 +116,13 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
+          <td><%= day.plan_finished_at.strtime('%H')if day.plan_finished_at.present? %></td> 
+          <td><%= day.plan_finished_at.strtime('%M')if day.plan_finished_at.present? %></td>
           <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td><%= day.business_processing_contents %></td>
+          <td><% if @overtime_status != 0 %>
+              <%= day.instructor_confirmation"上長A確認済み"%>
+              <% end %></td>
         </tr>
       <% end %>
     </tbody>

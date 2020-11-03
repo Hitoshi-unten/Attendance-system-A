@@ -79,6 +79,7 @@ class AttendancesController < ApplicationController
     # URLのidにはattendanceのidが入っている
     @user = User.find(params[:user_id]) #上記レコードのuser_idをもとにユーザー情報を探してくる
     @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
+    @superiors = User.where(superior: true).where.not(id: @user.id) #上長は２名いるので@superiorsと複数形にする。superiorがtrueなのは上長だけなのでそのまま条件式にする。複数取り出すためにwhereメソッドを使用。idが自分のidではない=where.not(id:@user.id)
   end
 
   def update_overwork_request
