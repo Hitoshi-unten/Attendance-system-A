@@ -93,40 +93,40 @@ class AttendancesController < ApplicationController
     redirect_to user_url(@user)
   end
   
-  # 残業申請モーダル！
-  def edit_superior_announcement
-    @user = User.find(params[:user_id])
-    @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name)
-    @users = User.joins(:attendances).group("users.id").where(attendances:{overwork_status: "申請中"}) #joinsでattendancesのURLを持っているuserを集めてる！
-  end
+  # # 残業申請モーダル！
+  # def edit_superior_announcement
+  #   @user = User.find(params[:user_id])
+  #   @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name)
+  #   @users = User.joins(:attendances).group("users.id").where(attendances:{overwork_status: "申請中"}) #joinsでattendancesのURLを持っているuserを集めてる！
+  # end
   
-  def update_superior_announcement
-    ActiveRecord::Base.transaction do
-      @overwork_status = Attendance.where(overtime_status: "申請中").count
-      @overwork_status1 = Attendance.where(overtime_status: "承認").count
-      @overwork_status2 = Attendance.where(overtime_status: "否認").count
-      @overwork_status3 = Attendance.where(overtime_status: "なし").count
-      @user = User.find(params[:user_id])
-      attendances_params.each do |id, item|
-        attendance = Attendance.find(id)
-        attendance.update_attributes!(item)
-      end
-    end
-    flash[:success] = "残業申請→申請中を#{@overtime_status}件、承認を#{@overtime_status1}件、否認を#{@overtime_status2}件、なしを#{@overtime_status3}件送信しました。"
-    redirect_to user_url(@user)
-  rescue ActiveRecord::RecordInvalid
-    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
-    redirect_to user_url(@user)
-  end
+  # def update_superior_announcement
+  #   ActiveRecord::Base.transaction do
+  #     @overwork_status = Attendance.where(overtime_status: "申請中").count
+  #     @overwork_status1 = Attendance.where(overtime_status: "承認").count
+  #     @overwork_status2 = Attendance.where(overtime_status: "否認").count
+  #     @overwork_status3 = Attendance.where(overtime_status: "なし").count
+  #     @user = User.find(params[:user_id])
+  #     attendances_params.each do |id, item|
+  #       attendance = Attendance.find(id)
+  #       attendance.update_attributes!(item)
+  #     end
+  #   end
+  #   flash[:success] = "残業申請→申請中を#{@overtime_status}件、承認を#{@overtime_status1}件、否認を#{@overtime_status2}件、なしを#{@overtime_status3}件送信しました。"
+  #   redirect_to user_url(@user)
+  # rescue ActiveRecord::RecordInvalid
+  #   flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+  #   redirect_to user_url(@user)
+  # end
   
-  def new_show #残業申請モーダルの確認ボタン
-    @user = User.find(params[:user_id])
-    @attendance = Attendance.find(params[:id])
-    @first_day = @attendance.worked_on.beginning_of_month #worked_on.日付、beginning_of_month月初日を計算してくれる。
-    @last_day = @first_day.end_of_month #end_of_month月末日を計算してくれる。
-    @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
-    @worked_sum = @attendances.where.not(started_at: nil).count
-  end  
+  # def new_show #残業申請モーダルの確認ボタン
+  #   @user = User.find(params[:user_id])
+  #   @attendance = Attendance.find(params[:id])
+  #   @first_day = @attendance.worked_on.beginning_of_month #worked_on.日付、beginning_of_month月初日を計算してくれる。
+  #   @last_day = @first_day.end_of_month #end_of_month月末日を計算してくれる。
+  #   @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+  #   @worked_sum = @attendances.where.not(started_at: nil).count
+  # end  
   
   private
   
