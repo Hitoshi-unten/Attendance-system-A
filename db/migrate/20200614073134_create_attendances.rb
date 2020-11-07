@@ -9,6 +9,7 @@ class CreateAttendances < ActiveRecord::Migration[5.1]
       t.boolean :next_day
       t.string :work_content
       t.string :instructor_confirmation
+      t.string :overtime_status
       
       
       t.references :user, foreign_key: true

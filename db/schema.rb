@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 20201011072729) do
     t.boolean "next_day"
     t.string "work_content"
     t.string "instructor_confirmation"
+    t.string "overtime_status"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

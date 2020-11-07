@@ -31,7 +31,7 @@
                 <td><%= f.time_select :finish_overwork, { include_blank: true },class: "input-sm" %></td>
                 <td><%= f.check_box :next_day, {}, "true", "false" %></td>
                 <td><%= f.text_field :work_content, class: "form-control" %></td>
-                <td><%= f.select :instructor_confirmation, { "上長A": 1, "上長B": 2 },{ include_blank: true }, class: "form-control", required: true %></td>
+                <td><%= f.collection_select :instructor_confirmation, @superiors, :id, :name, include_blank: true, class: "form-control", required: true %></td>
               </tr>
             </tbody>
           </table>

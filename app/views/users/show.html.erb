@@ -124,11 +124,12 @@
           <!--Time#strftimeは、Timeオブジェクトの表示形式を指定して文字列に変換する。TimeはRubyの組み込みオブジェクト。strftime(format) -> String 時刻をformat文字列に従って文字列に変換した結果を返す。%H:24時間制の時(00-23)、%M:分(00-59)-->
           <td></td>
           <td><%= day.work_content %></td>
-          <td></td>
-        <!--  <td>< % if @overwork_status != 0 %>-->
-        <!--        < %= day.instructor_confirmation "上長A確認済み" %>-->
-        <!--      < % end %></td>-->
-        <!--</tr>-->
+          <td>
+            <%= User.find(day.instructor_confirmation).name if day.instructor_confirmation.present? %>
+            <%= "へ" if day.overtime_status == "申請中" %>
+            <%= day.overtime_status %>
+            
+          </td>
       <% end %>
     </tbody>
 
