@@ -156,7 +156,9 @@
         <td></td>
         <td></td>
         <td></td>
-        <td></td>
+        <td>所属長承認　未<br>
+            <!--<　%= collection_select :instructor_confirmation, @superiors, :id, :name, include_blank: true, class: "form-control", required: true %><br>-->
+            <%= link_to "申請", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %></td>
         <!--<td colspan="2">< %= format_basic_info(@user.basic_time).to_f*@workd_sum %></td>-->
         <!--<td colspan="6"></td>-->
         <!--<td>< %= format("%.2f", @total_working_times.to_f) %></td>-->
