@@ -32,6 +32,7 @@
                 <td><%= f.check_box :next_day, {}, "true", "false" %></td>
                 <td><%= f.text_field :work_content, class: "form-control" %></td>
                 <td><%= f.collection_select :instructor_confirmation, @superiors, :id, :name, include_blank: true, class: "form-control", required: true %></td>
+                <!--ビューファイルのフォームでrequired: trueを書くと、空で送信することを防げる-->
               </tr>
             </tbody>
           </table>

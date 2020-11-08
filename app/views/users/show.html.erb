@@ -38,12 +38,15 @@
 </div>
 
 <div class="btn-users-show">
-  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-success" %>
+  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
+  <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %><br>
+  <%= link_to "勤怠修正ログ（承認済）", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
 </div>
 
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
+ 　　<!--rowspan:縦結合、colspan：横結合-->
       <tr>
         <th rowspan="2"></th>
         <th rowspan="3">日付</th>
@@ -128,7 +131,6 @@
             <%= User.find(day.instructor_confirmation).name if day.instructor_confirmation.present? %>
             <%= "へ" if day.overtime_status == "申請中" %>
             <%= day.overtime_status %>
-            
           </td>
       <% end %>
     </tbody>
@@ -139,6 +141,16 @@
       <!--rowspan:縦結合、colspan：横結合-->
       <tr>
         <!--<td rowspan="3"></td>-->
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><%= format("%.2f", @total_working_times.to_f) %></td>
         <td></td>
         <td></td>
         <td></td>
