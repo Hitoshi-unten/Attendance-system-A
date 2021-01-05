@@ -29,12 +29,16 @@ class UsersController < ApplicationController
     #fileはtmpに自動で一時保存される
     User.import(params[:file])
     flash[:success] = "ユーザー情報をインポートしました。"
-    redirect_to users_url
+    redirect_to 
   end
     
     # 全てのユーザーを表示するため、全ユーザーが代入されたインスタンス変数を定義して代入している。定義したインスタンス変数名は全てのユーザーを代入した複数形であるため@usersとしている。
 
-  def show # (特定の投稿を表示する画面)
+  def show
+    if current_user.admin?
+      redirect_to users_url
+    end
+    # (特定の投稿を表示する画面)
     # countメソッドは配列の要素数を取得することができる。今回はwhere.notを用いて、記述している。
     @worked_sum = @attendances.where.not(started_at: nil).count #「１ヶ月分の勤怠データの中で、出勤時間が何もない状態ではないものの数を代入」
     # @overwork_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name).count #残業申請のお知らせの件数

@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  # get 'month_approvals/new', to: 'month_approvals#new'
+
   root 'static_pages#top'
   # 最初に設定したトップページは、このアプリケーションの初期ページとなるのでroot設定に割り当てることにする。
   # このように置き換えるとコントローラ#アクションへの関連付けが変わり、ルートURL/へのGETリクエストが、StaticPagesコントローラのtopアクションにルーティングされるようになる。ルートURL/へアクセスした時にトップページが表示されるようになる。
@@ -45,6 +47,8 @@ Rails.application.routes.draw do
         patch 'update_overwork_request'
       end
     end
+    
+        
     # また、usersリソースのブロック内に記述しているため、設定されるルーティングは次のようになる。HTTP PATCH URL /users/:user_id/attendances/:id PATH user_attendance_path コントローラ#アクション attendances#update
     # これならユーザーに紐づいた勤怠データを作成するイメージが付きやすい。また、URL内に:user_idが含まれている点にも注目で、これによりparams[:user_id]でユーザーIDが取得できる。
     #resources :bases 
@@ -52,6 +56,8 @@ Rails.application.routes.draw do
         
   end
   resources :bases
+  resources :month_approvals
+
 end
 
         
