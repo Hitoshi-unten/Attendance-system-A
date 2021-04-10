@@ -15,21 +15,21 @@ class UsersController < ApplicationController
 
   def index #(一覧画面)
     @users = User.all
-    if params[:name].present?
-      @users = @users.get_by_name params[:name]
-    end
-    if params[:id].present?
-      @user = User.find_by(id: @users.id)
-    else
-      @user = User.new
-    end
+    # if params[:name].present?
+    #   @users = @users.get_by_name params[:name]
+    # end
+    # if params[:id].present?
+    #   @user = User.find_by(id: @users.id)
+    # else
+    #   @user = User.new
+    # end
   end
   
   def import
     #fileはtmpに自動で一時保存される
     User.import(params[:file])
     flash[:success] = "ユーザー情報をインポートしました。"
-    redirect_to 
+    redirect_to users_path 
   end
     
     # 全てのユーザーを表示するため、全ユーザーが代入されたインスタンス変数を定義して代入している。定義したインスタンス変数名は全てのユーザーを代入した複数形であるため@usersとしている。
@@ -116,7 +116,7 @@ class UsersController < ApplicationController
     end
     
     def basic_info_params
-      params.require(:user).permit(:department, :basic_time, :work_time)
+      params.require(:user).permit(:affiliation, :basic_time, :work_time)
     end
 
  # Railsにはセキュリティの高いアプリケーションを開発するのに便利な機能が多数ある。これはstrong_parametersと呼ばれるもので、コントローラのアクションで本当に使ってよいパラメータだけを厳密に指定することを強制するもの。
@@ -136,7 +136,9 @@ class UsersController < ApplicationController
  # アクセスしたユーザーが現在ログ��ンしているユーザーか確認します。    
     def correct_user
       @user = User.find(params[:id])
-      redirect_to(root_url) unless current_user?(@user)
+      unless current_user.admin
+        redirect_to(root_url) unless current_user?(@user)
+      end
     end
  # ここでいくつか注意すべき点がある。ここではUser.findを用いて、取り出したい記事をデータベースから探している。
  # このとき、リクエストの:idパラメータを取り出すためにparams[:id]を引数としてfindに渡している。

@@ -1,13 +1,7 @@
 Rails.application.routes.draw do
 
-  # get 'month_approvals/new', to: 'month_approvals#new'
-
   root 'static_pages#top'
-  # 最初に設定したトップページは、このアプリケーションの初期ページとなるのでroot設定に割り当てることにする。
-  # このように置き換えるとコントローラ#アクションへの関連付けが変わり、ルートURL/へのGETリクエストが、StaticPagesコントローラのtopアクションにルーティングされるようになる。ルートURL/へアクセスした時にトップページが表示されるようになる。
-  # アプリケーションのルーティングファイルの内容。外部からのリクエストをコントローラーとアクションに振り分ける方法を、DSL（ドメイン特化言語：domain-specific language）という特殊な言語でこのファイルを記述する。
-  # root 'static_pages#top'と記述することで、アプリケーションのルートURLへのアクセスをstatic_pagesコントローラのtopアクションに割り当てるようRailsに指示が伝わる。
-  # root 'static_pages#top'では、/static_pages#topというURLに対するROOTリクエストを、StaticPagesコントローラのtopアクションと結びつけている。
+  # 最初に設定したトップページは、このアプリケーションの初期ページとなるのでroot設定に割り当てることにする。このように置き換えるとコントローラ#アクションへの関連付けが変わり、ルートURL/へのGETリクエストが、StaticPagesコントローラのtopアクションにルーティングされるようになる。ルートURL/へアクセスした時にトップページが表示されるようになる。アプリケーションのルーティングファイルの内容。外部からのリクエストをコントローラーとアクションに振り分ける方法を、DSL（ドメイン特化言語：domain-specific language）という特殊な言語でこのファイルを記述する。root 'static_pages#top'と記述することで、アプリケーションのルートURLへのアクセスをstatic_pagesコントローラのtopアクションに割り当てるようRailsに指示が伝わる。root 'static_pages#top'では、/static_pages#topというURLに対するROOTリクエストを、StaticPagesコントローラのtopアクションと結びつけている。
   get '/signup', to: 'users#new'
   # ヘルパー signup_path signup_url HTTPリクエスト GET URL /signup コントローラ#アクション users#new
   # 同様に、get '/signup', to: 'users#new'はhttps://ad8f32ee195e44f1add884d80b8f5a70.vfs.cloud9.ap-northeast-1.amazonaws.com/というリクエストをusersコントローラのnewアクションに割り当てる。
@@ -37,7 +31,7 @@ Rails.application.routes.draw do
       get 'attendances/edit_one_month' # 勤怠編集ページ
       patch 'attendances/update_one_month'  # まとめて更新 # 注目すべきは、コントローラがattendancesと設定されている点。Userリ����ースに含まれるよう設定したが、attendances/...と記述することによってattendances_edit_one_month_user_pathとルーティングの設定を追加することが可能。URLはusers/1/attendances/edit_one_monthと直感的になる。
     end
-    collection { post :import }
+    collection {post :import}
     collection do
       get 'list_of_employees' # 出勤社員一覧
     end
