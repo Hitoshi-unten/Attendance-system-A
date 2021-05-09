@@ -4,12 +4,7 @@
   <table class="table table-bordered user-table">
     <tr>
       <td>
-        <!--ページ内にボタンを配置し、前月分、次月分へ表示切り替えできる機能を追加する。-->
-        <!--手法としては、link_toヘルパーメソッドにパラメーターを追加で渡し、パラメーターの有無によりページに表示する１ヶ月分の情報を判断する。-->
-        <!--下記のように記述することで、paramsハッシュにdateキーを含めることができる。-->
-        <!--idに関してはuser_pathによりRailsが自動的に判断して追加してくれる。-->
-        <!--値には@first_day.prev_monthを指定している。prev_monthは対象のDateオブジェクトの１ヶ月前の状態を返す。つまり前月の日付情報をパラメーターで渡せるということでこれが次月の情報の場合はnext_monthを使用する-->
-        <!--この拡張により、params[:date]から表示したい１ヶ月の情報を取り出せるようになった。-->
+        <!--ページ内にボタンを配置し、前月分、次月分へ表示切り替えできる機能を追加する。--><!--手法としては、link_toヘルパーメソッドにパラメーターを追加で渡し、パラメーターの有無によりページに表示する１ヶ月分の情報を判断する。--><!--下記のように記述することで、paramsハッシュにdateキーを含めることができる。--><!--idに関してはuser_pathによりRailsが自動的に判断して追加してくれる。--><!--値には@first_day.prev_monthを指定している。prev_monthは対象のDateオブジェクトの１ヶ月前の状態を返す。つまり前月の日付情報をパラメーターで渡せるということでこれが次月の情報の場合はnext_monthを使用する--><!--この拡張により、params[:date]から表示したい１ヶ月の情報を取り出せるようになった。-->
         <%= link_to "⇦︎︎︎", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-left" %>
         <%= l(@first_day, format: :middle) %>   時間管理表
         <%= link_to "︎︎︎⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-right" %>
@@ -26,15 +21,20 @@
     <tr>
       <td>所属：<%= @user.affiliation.present? ? @user.affiliation : "未所属" %></td>
       <td>氏名：<%= @user.name %></td>
-      <!--このビューでは、埋め込みRuby（ERB）を使用してユーザーの名前とメールアドレスを表示する。-->
-      <!--@で始まる@userというオブジェクトはインスタンス変数という変数のうちのひとつ。-->
-
-      <!--この@userをドット記法で繋げることにより、インスタンス変数に代入しているユーザーオブジェクトのnameの値を取得し表示することができる仕組み。-->
+      <!--このビューでは、埋め込みRuby（ERB）を使用してユーザーの名前とメールアドレスを表示する。--><!--@で始まる@userというオブジェクトはインスタンス変数という変数のうちのひとつ。--><!--この@userをドット記法で繋げることにより、インスタンス変数に代入しているユーザーオブジェクトのnameの値を取得し表示することができる仕組み。-->
       <td>コード</td>
       <td>出勤日数：<%= @worked_sum %></td>
       <td>締め：<%= l(@last_day, format: :short) %></td>
     </tr>
   </table>  
+</div>
+
+<div>
+  <% if current_user.superior %>
+    <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>
+    <%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %><br>
+    <%= link_to "【残業申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>
+  <% end %>
 </div>
 
 <div class="btn-users-show">
@@ -78,19 +78,14 @@
     </thead>
     
     <tbody>
-      <!--月の初日からを繰り返し処理して行を出力していることで月の日付が一覧表示されている。-->
-      <!--日付のみでひと月分を表示してみる。月の初日と月の末日の日付データをそれぞれインスタンス変数で定義する。これらを範囲オブジェクトとして扱うことで、手軽にひと月分の情報を表示することが可能となる。-->
-      <!--範囲オブジェクトとして扱う(@first_day..@last_day)-->
+      <!--月の初日からを繰り返し処理して行を出力していることで月の日付が一覧表示されている。--><!--日付のみでひと月分を表示してみる。月の初日と月の末日の日付データをそれぞれインスタンス変数で定義する。これらを範囲オブジェクトとして扱うことで、手軽にひと月分の情報を表示することが可能となる。--><!--範囲オブジェクトとして扱う(@first_day..@last_day)-->
       <% @attendances.each do |day| %>
         <tr>
-          <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。-->
-          <!--文法< %= link_to[リンクの名前],[URLまたはルーティングヘルパー] %>-->
+          <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。--><!--文法< %= link_to[リンクの名前],[URLまたはルーティングヘルパー] %>-->
           <td><%= link_to "残業申請", edit_overwork_request_user_attendance_path(@user, day), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td>
-            <!--wdayメソッドを使うことで、何番目（日曜から始まり0から数える）の曜日か確認できる。-->
-            <!--日0月1火2水3木4金5土6-->
-            <!--グローバル変数は極端に言うとプログラムのどこからでも呼び出すことができる変数で$変数名のように$を用いて表現する。-->
+            <!--wdayメソッドを使うことで、何番目（日曜から始まり0から数える）の曜日か確認できる。--><!--日0月1火2水3木4金5土6--><!--グローバル変数は極端に言うとプログラムのどこからでも呼び出すことができる変数で$変数名のように$を用いて表現する。-->
             <% if day.worked_on.wday == 6 %>
                <font color="Blue"><%= $days_of_the_week[day.worked_on.wday] %></font>
             <% elsif day.worked_on.wday == 0 %>
@@ -114,10 +109,7 @@
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
               <%= str_times = working_times(day.started_at.floor_to(15.minutes), day.finished_at.floor_to(15.minutes)) %>
-            <!--これは繰り返し処理中の勤怠データに、started_atとfinished_atの値が存在するか判定するもの。-->
-            <!--在社時間を計算するためには上記どちらの値も必須なので、これらが存在することを確認してからヘルパーメソッドを呼び出すよう設定している。-->
-            <!--数値を扱うクラスには主に浮動小数点を扱うFloatクラスと整数を扱うIntegerクラスがあり、floorメソッドはFloatクラスのメソッドで、小数点以下を切って、より小さい方の整数に丸める。-->
-              <!--< %= working_times(day.started_at, day.finished_at) %>-->
+            <!--これは繰り返し処理中の勤怠データに、started_atとfinished_atの値が存在するか判定するもの。--><!--在社時間を計算するためには上記どちらの値も必須なので、これらが存在することを確認してからヘルパーメソッドを呼び出すよう設定している。--><!--数値を扱うクラスには主に浮動小数点を扱うFloatクラスと整数を扱うIntegerクラスがあり、floorメソッドはFloatクラスのメソッドで、小数点以下を切って、より小さい方の整数に丸める。--><!--< %= working_times(day.started_at, day.finished_at) %>-->
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
           </td>
@@ -136,48 +128,33 @@
     </tbody>
 
     <tfoot>
-      <!--勤怠表にフッター部分を追加する。フッターとは、Webページなどにおいて各ページの下部に定形の情報を表示するための領域のこと。勤怠表の一番下に追加情報表示領域を作ろうというもの。-->
-      <!--表示領域には、・１ヶ月分の合計日数、・出勤した日付だけのwork_time（勤務時間）累計、・在社時間の累計 以上を表記する。-->
+      <!--勤怠表にフッター部分を追加する。フッターとは、Webページなどにおいて各ページの下部に定形の情報を表示するための領域のこと。勤怠表の一番下に追加情報表示領域を作ろうというもの。--><!--表示領域には、・１ヶ月分の合計日数、・出勤した日付だけのwork_time（勤務時間）累計、・在社時間の累計 以上を表記する。-->
       <!--rowspan:縦結合、colspan：横結合-->
       <tr>
-        <!--<td rowspan="3"></td>-->
         <td></td>
+        <td colspan="2"></td>
+        <td colspan="6"></td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td><%= format("%.2f", @total_working_times.to_f) %></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>
-            <!--< %= User.find(day.instructor_confirmation).name if day.instructor_confirmation.present? %>-->
-            <!--< %= "へ" if day.overtime_status == "申請中" %>-->
-            <!--< %= day.overtime_status %><br>-->
-            <!--< %= collection_select :instructor_confirmation, @superiors, :id, :name, include_blank: true, class: "form-control", required: true %><br>-->
-            <%= link_to "申請", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %></td>
-        <!--<td colspan="2">< %= format_basic_info(@user.basic_time).to_f*@workd_sum %></td>-->
-        <!--<td colspan="6"></td>-->
-        <!--<td>< %= format("%.2f", @total_working_times.to_f) %></td>-->
-        <!--<td colspan="5"></td>-->
-        <!--<td>所属長承認&emsp;<br>< %= link_to "申請", edit_qverwork_request_user_attendance_path(@user), remote: true, class: "btn-btn-primary" %></td>-->
+        <td colspan="5"></td>
+        <td>所属長承認
+          <%= form_with(model: @month_approval, url: user_month_approvals_path(current_user)) do |f| %>
+          <!--form_withメソッドは新規オブジェクトならPOSTリクエスト、既存オブジェクトならPATCHリクエストが送信される。-->
+            <%= f.select :approval_superior_id, [["上長ユーザーA","上長ユーザーA"], ["上長ユーザーB","上長ユーザーB"]] %>
+          <!--< %= f.collection_select :approval_superior_id, @users, :id, :name, { include_blank: true } %>-->
+            <!--f.collection_select:保存先のカラム名, テーブル名, 実際にDBに保存させるカラム名, 選択肢に用いるカラム名-->                                                                                                                                                                                                                                                                                                                                                                                                                                              <%= f.hidden_field :applicant_user_id, :value => @user.id %>
+    
+            <%= f.hidden_field :approval_month, :value => @attendances.first.worked_on %>
+            <%= f.hidden_field :approval_status, :value => 1 %>
+            <%= f.submit "申請", class: "btn btn-md btn-primary btn-block btn-approval" %>
+            <!--<select class="form-control" name="month[one_month_instructor]">-->
+            <!--  <option value="上長ユーザーA">上長ユーザーA</option>-->
+            <!--  <option value="上長ユーザーB">上長ユーザーB</option>-->
+            <!--</select>-->
+            <!--<br>-->
+            <!--<input type="submit" name="commit" value="申請" class="btn btn-primary" data-disable-with="申請">-->
+          <% end %>
+        </td>
       </tr>
-      <!--<tr>-->
-      <!--  <td rowspan="3">< %= @attendances.count %></td>-->
-      <!--  <td rowspan="3">< %= format_basic_info(@user.basic_work_time).to_f * @worked_sum %></td>-->
-        <!--今回の総合勤務時間は[work_time]*[出勤日数]の結果を意味する。つまり、ユーザーの出勤日数から想定した勤務時間の累計になる。-->
-        <!--勤怠基本情報は、showアクション内ですでに@user変数として代入されている。そして出勤日数も同様に、@worked_sum変数に代入されている。計算に必要な両方の価が取得可能な状態なので、あとは計算するだけとなる。-->
-      　<!--式の右側の@worked_sumの値はそのまま計算できるが、左側に関してはformat_basic_infoでの戻り値がstringクラスになるためそのままだとうまく計算されない。文字列と数値はそのまま計算しても期待する結果は返ってこない。
-      <!--　そのため、to_fメソッドを追加。このメソッドは、文字列を浮動小数点数とみなしてFloatオブジェクトに変換する。to_iメソッド（文字列から整数に変換）の小数点付きバージョン。これで正常に計算結果を出力できるようになる。-->-->
-      <!--  <td colspan="2">< %= format("%.2f", @total_working_times.to_f) %></td>-->
-        <!--こちらは計算結果を小数点第二位までフォーマットしている。-->
-      <!--</tr>-->
     </tfoot>
   </table>
 </div>
