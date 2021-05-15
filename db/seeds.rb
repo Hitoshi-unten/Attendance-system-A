@@ -44,14 +44,14 @@ Base.create!(base_id: 3,
              
 puts "bases created"
 
-MonthApproval.create!(
-             approval_superior_id: 1,
-             approval_status: 1,
-             approval_month: 1)
+MonthApproval.create!(user_id: 1,
+                      approval_superior_id: 1,
+                      approval_status: 1,
+                      approval_month: 1)
              
-MonthApproval.create!(
-             approval_superior_id: 2,
-             approval_status: 2,
-             approval_month: 2)
+MonthApproval.create!(user_id: 2,
+                      approval_superior_id: 2,
+                      approval_status: 2,
+                      approval_month: 2)
 
-puts "months_approvals created"
+puts "month_approvals created"
