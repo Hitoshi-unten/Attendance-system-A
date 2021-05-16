@@ -139,9 +139,9 @@
         <td>所属長承認
           <%= form_with(model: @month_approval, url: user_month_approvals_path(current_user, id: current_user.id), local:true) do |f| %>
           <!--form_withメソッドは新規オブジェクトならPOSTリクエスト、既存オブジェクトならPATCHリクエストが送信される。-->
-  
-            <%= f.select :approval_superior_id, [["上長A",MonthApproval.where(user_id: 1)], ["上長B",MonthApproval.where(user_id: 2)]] %>
-          <!--< %= f.collection_select :approval_superior_id, @users, :id, :name, { include_blank: true } %>-->
+
+            <!--< %= f.select :approval_superior_id, {'上長A': 1, '上長B': 2}, { include_blank: '選択してください'}, { class: 'form-control', required: true } %>-->
+            <%= f.collection_select :approval_superior_id, @superior_users, :id, :name, { include_blank: true } %>
             <!--f.collection_select:保存先のカラム名, テーブル名, 実際にDBに保存させるカラム名, 選択肢に用いるカラム名-->                                                                                                                                                                                                                                                                                                                                                                                                                                              <%= f.hidden_field :applicant_user_id, :value => @user.id %>
     
             <%= f.hidden_field :approval_month, :value => @attendances.first.worked_on %>
