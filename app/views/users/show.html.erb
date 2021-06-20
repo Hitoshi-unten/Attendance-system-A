@@ -30,11 +30,14 @@
 </div>
 
 <div>
+  <ul class="list-unstyled">
   <% if current_user.superior %>
     <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>
     <%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %><br>
-    <%= link_to "【残業申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>
+    <!--< %= link_to "【残業申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>-->
+    <%= link_to "【残業申請のお知らせ】", user_attendances_edit_superior_announcement_path(@user), remote: true %>
   <% end %>
+  </ul>
 </div>
 
 <div class="btn-users-show">
@@ -81,9 +84,9 @@
       <!--月の初日からを繰り返し処理して行を出力していることで月の日付が一覧表示されている。--><!--日付のみでひと月分を表示してみる。月の初日と月の末日の日付データをそれぞれインスタンス変数で定義する。これらを範囲オブジェクトとして扱うことで、手軽にひと月分の情報を表示することが可能となる。--><!--範囲オブジェクトとして扱う(@first_day..@last_day)-->
       <% @attendances.each do |day| %>
         <tr>
-          <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。--><!--文法< %= link_to[リンクの名前],[URLまたはルーティングヘルパー] %>-->
-          <td><%= link_to "残業申請", edit_overwork_request_user_attendance_path(@user, day), remote: true, class: "btn btn-primary" %></td>
-          <td><%= l(day.worked_on, format: :short) %></td>
+          <!--文法< %= link_to[リンクの名前],[URLまたはルーティングヘルパー] %>-->
+          <td><%= link_to "残業申請", edit_overwork_request_user_attendance_path(@user, day), remote: :true, class: "btn btn-primary" %></td>
+          <td><%= l(day.worked_on, format: :short) %></td> <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。-->
           <td>
             <!--wdayメソッドを使うことで、何番目（日曜から始まり0から数える）の曜日か確認できる。--><!--日0月1火2水3木4金5土6--><!--グローバル変数は極端に言うとプログラムのどこからでも呼び出すことができる変数で$変数名のように$を用いて表現する。-->
             <% if day.worked_on.wday == 6 %>
@@ -114,8 +117,8 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
-          <td><%= day.finish_overwork.strftime('%H') if day.finish_overwork.present? %></td>
-          <td><%= day.finish_overwork.strftime('%M') if day.finish_overwork.present? %></td>
+          <td><%= day.finish_overtime.strftime('%H') if day.finish_overtime.present? %></td>
+          <td><%= day.finish_overtime.strftime('%M') if day.finish_overtime.present? %></td>
           <!--Time#strftimeは、Timeオブジェクトの表示形式を指定して文字列に変換する。TimeはRubyの組み込みオブジェクト。strftime(format) -> String 時刻をformat文字列に従って文字列に変換した結果を返す。%H:24時間制の時(00-23)、%M:分(00-59)-->
           <td></td>
           <td><%= day.work_content %></td>
@@ -141,7 +144,7 @@
           <!--form_withメソッドは新規オブジェクトならPOSTリクエスト、既存オブジェクトならPATCHリクエストが送信される。-->
 
             <!--< %= f.select :approval_superior_id, {'上長A': 1, '上長B': 2}, { include_blank: '選択してください'}, { class: 'form-control', required: true } %>-->
-            <%= f.collection_select :approval_superior_id, @superior_users, :id, :name, { include_blank: true } %>
+            <%= f.collection_select :approval_superior_id, @superior_users, :id, :name, { prompt: "選択してください" } %>
             <!--f.collection_select:保存先のカラム名, テーブル名, 実際にDBに保存させるカラム名, 選択肢に用いるカラム名-->                                                                                                                                                                                                                                                                                                                                                                                                                                              <%= f.hidden_field :applicant_user_id, :value => @user.id %>
     
             <%= f.hidden_field :approval_month, :value => @attendances.first.worked_on %>

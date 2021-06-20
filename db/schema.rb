@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 20210501041426) do
     t.datetime "started_at"
     t.datetime "finished_at"
     t.string "note"
-    t.datetime "finish_overwork"
+    t.datetime "finish_overtime"
     t.boolean "next_day"
     t.string "work_content"
     t.string "instructor_confirmation"

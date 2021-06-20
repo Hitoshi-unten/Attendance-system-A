@@ -43,6 +43,7 @@ class UsersController < ApplicationController
     @worked_sum = @attendances.where.not(started_at: nil).count #「１ヶ月分の勤怠データの中で、出勤時間が何もない状態ではないものの数を代入」
     # @overwork_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name).count #残業申請のお知らせの件数
     @superior_users = User.where(superior: true)
+    # @overwork_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name).count #残業申請のお知らせの件数
   end
 
   def new # (投稿の新規作成画面)
@@ -110,6 +111,23 @@ class UsersController < ApplicationController
     # @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
     # @worked_sum = @attendances.where.not(started_at: nil).count
 
+  def edit_overwork_request
+    @user = User.find(params[:user_id]) #上記レコードのuser_idをもとにユーザー情報を探してくる
+    @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
+    @superiors = User.where(superior: true).where.not(id: @user.id) #上長は２名いるので@superiorsと複数形にする。superiorがtrueなのは上長だけなのでそのまま条件式にする。複数取り出すためにwhereメソッドを使用。idが自分のidではない=where.not(id:@user.id)
+  end
+
+  def update_overwork_request
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
+    if @attendance.update_attributes(overwork_params)
+      flash[:success] = "残業を申請しました。"
+    else
+      flash[:danger] = "申請をキャンセルしました。"
+    end
+    redirect_to user_url(@user)
+  end
+
   private
 
     def user_params #ユーザーの送信情報を制御するuser_params
@@ -120,6 +138,10 @@ class UsersController < ApplicationController
       params.require(:user).permit(:affiliation, :basic_time, :work_time)
     end
 
+    def overwork_params
+      params.require(:attendance).permit(:finish_overwork, :next_day, :work_content, :instructor_confirmation, :overtime_status)
+    end
+ 
  # Railsにはセキュリティの高いアプリケーションを開発するのに便利な機能が多数ある。これはstrong_parametersと呼ばれるもので、コントローラのアクションで本当に使ってよいパラメータだけを厳密に指定することを強制するもの。
  # なぜそんな面倒なことをしないといけないのか。コントローラが受け取ったパラメータをノーチェックでまるごと自動的にモデルに渡せるようにする方が確かに開発は楽だが、パラメータをこのように安易に渡してしまうと、パラメータがチェックされていない点を攻撃者に悪用される可能性がある。たとえば、サーバーへのリクエストに含まれる新規投稿送信フォームに、もともとフォームになかったフィールドが攻撃者によって密かに追加され、アプリケーションの整合性が損なわれる可能性が考えられる。チェックされていないパラメータをまるごとモデルに保存する行為は、モデルに対する「マスアサインメント」と呼ばれている。これが発生すると、正常なデータの中に悪意のあるデータが含まれてしまう可能性がある。
  # そこで、コントローラで渡されるパラメータはホワイトリストでチェックし、不正なマスアサ��ンメントを防がなければならない。この場合、createでパラメータを安全に扱うために、:name, :email, :department, :password, :password_confirmationパラメータの利用を「許可」し、かつ「必須」であることを指定したいのです。そのための構文によって、requireメソッドとpermitメソッドが導入される。

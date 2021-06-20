@@ -55,13 +55,16 @@ class AttendancesController < ApplicationController
     # URLのidにはattendanceのidが入っている
     @user = User.find(params[:user_id]) #上記レコードのuser_idをもとにユーザー情報を探してくる
     @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
+    # @attendance = @user.attendances.find(params[:attendance_id])
     @superiors = User.where(superior: true).where.not(id: @user.id) #上長は２名いるので@superiorsと複数形にする。superiorがtrueなのは上長だけなのでそのまま条件式にする。複数取り出すためにwhereメソッドを使用。idが自分のidではない=where.not(id:@user.id)
   end
 
   def update_overwork_request
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
-    if @attendance.update_attributes(overwork_params)
+    # @attendance = @user.attendances.find(params[:attendance_id])
+    params[:attendance][:overtime_status] = "申請中"
+    if @attendance.update_attributes(overtime_params)
       flash[:success] = "残業を申請しました。"
     else
       flash[:danger] = "申請をキャンセルしました。"
@@ -69,23 +72,24 @@ class AttendancesController < ApplicationController
     redirect_to user_url(@user)
   end
   
-  # 残業申請モーダル！
+  # 残業申請承認モーダル！
   def edit_superior_announcement
     @user = User.find(params[:user_id])
-    @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name)
-    @users = User.joins(:attendances).group("users.id").where(attendances:{overwork_status: "申請中"}) #joinsでattendancesのURLを持っているuserを集めてる！
+    @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id).where.not(user_id: @user.id)
+    # @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id).where.not(user_id: @user.id).group_by(&:user_id)
+    @users = User.joins(:attendances).group("users.id").where(attendances:{overtime_status: "申請中"}) #joinsでattendancesのURLを持っているuserを集めてる！
   end
   
   def update_superior_announcement
     ActiveRecord::Base.transaction do
-      @overwork_status = Attendance.where(overtime_status: "申請中").count
-      @overwork_status1 = Attendance.where(overtime_status: "承認").count
-      @overwork_status2 = Attendance.where(overtime_status: "否認").count
-      @overwork_status3 = Attendance.where(overtime_status: "なし").count
+      # @overtime_status = Attendance.where(overtime_status: "申請中").count
+      # @overtime_status1 = Attendance.where(overtime_status: "承認").count
+      # @overtime_status2 = Attendance.where(overtime_status: "否認").count
+      # @overtime_status3 = Attendance.where(overtime_status: "なし").count
       @user = User.find(params[:user_id])
-      attendances_params.each do |id, item|
+      reply_overtime_params.each do |id, item|
         attendance = Attendance.find(id)
-        attendance.update_attributes!(item)
+        attendance.update_attributes!(item) #(id, item)
       end
     end
     flash[:success] = "残業申請→申請中を#{@overtime_status}件、承認を#{@overtime_status1}件、否認を#{@overtime_status2}件、なしを#{@overtime_status3}件送信しました。"
@@ -112,8 +116,13 @@ class AttendancesController < ApplicationController
     end
     
     # 残業情報を扱う
-    def overwork_params
-      params.require(:attendance).permit(:finish_overwork, :next_day, :work_content, :instructor_confirmation, :overtime_status)
+    def overtime_params
+      params.require(:attendance).permit(:finish_overtime, :next_day, :work_content, :instructor_confirmation, :overtime_status)
+    end
+
+    # 残業情報承認を扱う    
+    def reply_overtime_params
+      params.require(:attendance).permit(attendances: :superior_status)
     end
     
     # beforeフィルター

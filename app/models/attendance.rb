@@ -1,17 +1,12 @@
 class Attendance < ApplicationRecord
-  # belong_to :userはUserモデルと１対１の関係を示している。
-  # rails g model Attendance worked_on:date started_at:datetime finished_at:datetime note:string user:references これをターミナルで実行するとAtetndanceモデルが生成される。
-  # 生成されたコードでは、Userモデルと１対１の関係を示すbelongs_to :userというコードが記述されている。これは先ほど実行したコマンドにuser:referenceという引数を含めたため。
-  # この引数を使うと、自動的にuser_id属性が追加されActiveRecordがUserモデルとAttendanceモデルを紐づける準備をしてくれる。
+  # belong_to :userはUserモデルと１対１の関係を示している。# rails g model Attendance worked_on:date started_at:datetime finished_at:datetime note:string user:references これをターミナルで実行するとAtetndanceモデルが生成される。# 生成されたコードでは、Userモデルと１対１の関係を示すbelongs_to :userというコードが記述されている。これは先ほど実行したコマンドにuser:referenceという引数を含めたため。# この引数を使うと、自動的にuser_id属性が追加されActiveRecordがUserモデルとAttendanceモデルを紐づける準備をしてくれる。
   belongs_to :user
   # 日付取り扱いは存在性の検証が必要。
   validates :worked_on, presence: true
   # noteは一言メモ、最大文字数を50文字と設定。
   validates :note, length: { maximum: 50 }
 
-  # Railsでは、モデルの状態を確認し、無効な場合errorsオブジェクトにメッセージを追加するメソッドを作成することができる。
-  # このメソッドを作成後、バリデーションメソッド名を指すシンボルを渡しvalidateクラスメソッドを使って登録する必要がある。
-  # 出勤時間が存在しない場合、退勤時間は無効
+  # Railsでは、モデルの状態を確認し、無効な場合errorsオブジェクトにメッセージを追加するメソッドを作成することができる。# このメソッドを作成後、バリデーションメソッド名を指すシンボルを渡しvalidateクラスメソッドを使って登録する必要がある。# 出勤時間が存在しない場合、退勤時間は無効
   validate :finished_at_is_invalid_without_a_started_at
 
   # 出勤・退勤時間どちらも存在する時、出勤時間より早い退勤時間は無効
@@ -21,14 +16,11 @@ class Attendance < ApplicationRecord
   
   validate :finished_at_is_invalid_without_a_finished_at, on: :invalid_finished_at
   
- # blank?は対象がnil "" " " [] {}のいずれかでtrueを返す。
- # present?はその逆（値が存在する場合）にtrueを返す。
- # &&は左右どちらもtrueの時、trueを返す。（true && falseやfalse && trueやfalse && falseの場合はfalseを返す）
+ # blank?は対象がnil "" " " [] {}のいずれかでtrueを返す。# present?はその逆（値が存在する場合）にtrueを返す。# &&は左右どちらもtrueの時、trueを返す。（true && falseやfalse && trueやfalse && falseの場合はfalseを返す）
  
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present? # どちらも真(true)だった場合に、エラーメッセージの追加が実行される仕組み。つまり「出勤時間が無い、かつ退勤時間が存在する場合」、trueとなって処理が実行される。
   end
-
   
   def started_at_than_finished_at_fast_if_invalid
     if started_at.present? && finished_at.present?
@@ -40,6 +32,11 @@ class Attendance < ApplicationRecord
     if started_at.present? && finished_at.blank?
       errors.add(:finished_at, "が必要です") unless Date.current
     end
+  end
+  
+    # 更新を許可するカラムを定義
+  def self.updatable_attributes
+    ["worked_on", "started_at", "finished_at", "note", "finish_overtime", "next_day", "work_content", "instructor_confirmation", "overtime_status"]
   end
 end
   # def started_at_and_finished_at
