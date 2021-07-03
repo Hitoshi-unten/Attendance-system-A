@@ -5,7 +5,7 @@
         <span aria-hidden="true">&times;</span>
       </button>
       <div class="modal-body">
-        <%= form_with(model: @attendance, url: user_attendances_update_superior_announcement_path(@user, @attendance), local: true, method: :patch) do |f| %>
+        <%= form_with(model: @user, url: update_superior_announcement_user_attendances_path(@user), local: true, method: :patch) do |f| %>
           <!--< %= render 'shared/error_messages', object: @attedance %>-->
           <% @users.each do |user| %>
         <!--フォームを追加するのにRailsではform_withというヘルパーメソッドを使う。このメソッドはActive Recordのオブジェクトを取り込み、さらにそのオブジェクトの属性（カラム）を使ってフォームを自動的に構築してくれる便利なもの。-->
@@ -30,32 +30,34 @@
             <!--< % @attendances = @attendances.where(user_id: user.id) %>-->
             <!--< % @attendances.where(user_id: user.id) %>-->
             <% @attendances.each do |attendance| %>
-              <% if attendance.user_id == user.id %>
-              <tbody>
-                <tr>
-                  <!--日付-->
-                  <td><%= l(attendance.worked_on, format: :short) %></td>
-                  <!--曜日-->
-                  <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
-                  <!--終了予定時間-->
-                  <td><%= attendance.finish_overtime.strftime("%H:%M") %></td>
-                  <!--指定勤務終了時間-->
-                  <td><%= User.find_by(id: attendance.user_id).designated_work_end_time.strftime("%H:%M") %></td>
-                  <!--時間外時間-->
-                  <td></td><!--<td>< %= Time.at(t2).utc.strftime("%H:%M")%></td>-->
-                  <!--業務処理内容-->
-                  <td><%= attendance.work_content %></td>
-                  <!--指示者確認印-->
-                  <td><%= f.select :indicator_check, {'なし':1, '申請中':2, '承認':3, '否認':4}, { class: 'form-control input-sm', required: true } %></td>
-                  <!--ビューファイルのフォームでrequired: trueを書くと、空で送信することを防げる-->
-                  <td><%= f.check_box :change, {}, "true", "false" %></td>
-                  <td><%= link_to "確認", user_path(@user), local: true, class: "btn btn-primary" %></td>
-                </tr>
-              </tbody>
+              <%= f.fields_for "attendances[]", attendance do |at| %>
+                <% if attendance.user_id == user.id %>
+                  <tbody>
+                    <tr>
+                      <!--日付-->
+                      <td><%= l(attendance.worked_on, format: :short) %></td>
+                      <!--曜日-->
+                      <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
+                      <!--終了予定時間-->
+                      <td><%= attendance.finish_overtime.strftime("%H:%M") %></td>
+                      <!--指定勤務終了時間-->
+                      <td><%= User.find_by(id: attendance.user_id).designated_work_end_time.strftime("%H:%M") %></td>
+                      <!--時間外時間-->
+                      <td></td><!--<td>< %= Time.at(t2).utc.strftime("%H:%M")%></td>-->
+                      <!--業務処理内容-->
+                      <td><%= attendance.work_content %></td>
+                      <!--指示者確認印-->
+                      <td><%= at.select :indicator_check, {'なし':1, '申請中':2, '承認':3, '否認':4}, { class: 'form-control input-sm', required: true } %></td>
+                      <!--ビューファイルのフォームでrequired: trueを書くと、空で送信することを防げる-->
+                      <td><%= at.check_box :change, {}, "true", "false" %></td>
+                      <td><%= link_to "確認", user_path(@user), local: true, class: "btn btn-primary" %></td>
+                    </tr>
+                  </tbody>
+                <% end %>
               <% end %>
             <% end %>
-          <% end %> 
           </table>
+          <% end %>
          <%= f.submit "変更を送信する", class: "btn-btn-primary" %> 
        </div>
       <% end %>

@@ -28,9 +28,11 @@ Rails.application.routes.draw do
         get 'edit_overwork_request'
         patch 'update_overwork_request'
       end
+      collection do
+        get 'edit_superior_announcement'
+        patch 'update_superior_announcement'
+      end
     end
-    get 'attendances/edit_superior_announcement', to:'attendances#edit_superior_announcement'
-    patch 'attendances/update_superior_announcement', to:'attendances#update_superior_announcement'
 
     resources :month_approvals
   end

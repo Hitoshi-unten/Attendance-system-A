@@ -10,6 +10,8 @@ class CreateAttendances < ActiveRecord::Migration[5.1]
       t.string :work_content
       t.string :instructor_confirmation
       t.string :overtime_status
+      t.integer :indicator_check
+      t.boolean :change
       
       t.references :user, foreign_key: true
       t.timestamps

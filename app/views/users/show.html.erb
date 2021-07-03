@@ -35,7 +35,7 @@
     <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>
     <%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %><br>
     <!--< %= link_to "【残業申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>-->
-    <%= link_to "【残業申請のお知らせ】", user_attendances_edit_superior_announcement_path(@user), remote: true %>
+    <%= link_to "【残業申請のお知らせ】", edit_superior_announcement_user_attendances_path(@user), remote: true %>
   <% end %>
   </ul>
 </div>

@@ -122,7 +122,7 @@ class AttendancesController < ApplicationController
 
     # 残業情報承認を扱う    
     def reply_overtime_params
-      params.require(:attendance).permit(attendances: :superior_status)
+      params.require(:user).permit(attendances: [:indicator_check, :change])[:attendances]
     end
     
     # beforeフィルター
