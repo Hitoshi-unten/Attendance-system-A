@@ -43,7 +43,11 @@
                       <!--指定勤務終了時間-->
                       <td><%= User.find_by(id: attendance.user_id).designated_work_end_time.strftime("%H:%M") %></td>
                       <!--時間外時間-->
-                      <td></td><!--<td>< %= Time.at(t2).utc.strftime("%H:%M")%></td>-->
+                      <td>
+                        <% if attendance.finish_overtime.present? && User.find_by(id: attendance.user_id).designated_work_end_time.present? %>
+                          <%= str_times = over_times(attendance.finish_overtime.floor_to(15.minutes), User.find_by(id: attendance.user_id).designated_work_end_time.floor_to(15.minutes), attendance.next_day) %>
+                        <% end %>
+                      </td><!--<td>< %= Time.at(t2).utc.strftime("%H:%M")%></td>-->
                       <!--業務処理内容-->
                       <td><%= attendance.work_content %></td>
                       <!--指示者確認印-->

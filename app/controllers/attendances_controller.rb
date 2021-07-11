@@ -82,10 +82,10 @@ class AttendancesController < ApplicationController
   
   def update_superior_announcement
     ActiveRecord::Base.transaction do
-      # @overtime_status = Attendance.where(overtime_status: "申請中").count
-      # @overtime_status1 = Attendance.where(overtime_status: "承認").count
-      # @overtime_status2 = Attendance.where(overtime_status: "否認").count
-      # @overtime_status3 = Attendance.where(overtime_status: "なし").count
+      @overtime_status = Attendance.where(overtime_status: "申請中").count
+      @overtime_status1 = Attendance.where(overtime_status: "承認").count
+      @overtime_status2 = Attendance.where(overtime_status: "否認").count
+      @overtime_status3 = Attendance.where(overtime_status: "なし").count
       @user = User.find(params[:user_id])
       reply_overtime_params.each do |id, item|
         attendance = Attendance.find(id)
