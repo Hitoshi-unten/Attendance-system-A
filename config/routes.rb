@@ -31,10 +31,12 @@ Rails.application.routes.draw do
       collection do
         get 'edit_superior_announcement'
         patch 'update_superior_announcement'
+        
+        patch 'monthly_approval' # 1ヶ月承認申請
+        get 'edit_monthly_approval' # 1ヶ月承認申請（上長モーダル表示）
+        patch 'update_monthly_approval' # 1ヶ月承認申請（上長モーダル承認）
       end
     end
-
-    resources :month_approvals
   end
 end
 

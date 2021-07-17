@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210501041426) do
+ActiveRecord::Schema.define(version: 20201011072729) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -24,6 +24,8 @@ ActiveRecord::Schema.define(version: 20210501041426) do
     t.string "overtime_status"
     t.integer "indicator_check"
     t.boolean "change"
+    t.integer "approval_superior_id"
+    t.integer "approval_status"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -36,16 +38,6 @@ ActiveRecord::Schema.define(version: 20210501041426) do
     t.string "attendance"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "month_approvals", force: :cascade do |t|
-    t.integer "approval_superior_id"
-    t.integer "approval_status"
-    t.date "approval_month"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_month_approvals_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|

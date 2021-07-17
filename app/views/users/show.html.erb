@@ -32,9 +32,8 @@
 <div>
   <ul class="list-unstyled">
   <% if current_user.superior %>
-    <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>
+    <%= link_to "【所属長承認申請のお知らせ】", edit_monthly_approval_user_attendances_path(@user), remote: true %>
     <%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %><br>
-    <!--< %= link_to "【残業申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>-->
     <%= link_to "【残業申請のお知らせ】", edit_superior_announcement_user_attendances_path(@user), remote: true %>
   <% end %>
   </ul>
@@ -140,7 +139,7 @@
         <td></td>
         <td colspan="5"></td>
         <td>所属長承認
-          <%= form_with(model: @month_approval, url: user_month_approvals_path(current_user, id: current_user.id), local:true) do |f| %>
+          <%= form_with(model: @attendances, url: monthly_approval_user_attendances_path(@user), local:true) do |f| %>
           <!--form_withメソッドは新規オブジェクトならPOSTリクエスト、既存オブジェクトならPATCHリクエストが送信される。-->
 
             <!--< %= f.select :approval_superior_id, {'上長A': 1, '上長B': 2}, { include_blank: '選択してください'}, { class: 'form-control', required: true } %>-->
@@ -167,3 +166,4 @@
 <div id="edit-overwork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="kintailog" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-superior-announcement" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<!--<div id="edit-monthly-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="display: block;"></div>-->

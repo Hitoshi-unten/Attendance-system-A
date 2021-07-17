@@ -18,7 +18,7 @@ User.create!(name: "上長B",
              password: "password",
              password_confirmation: "password")
 
-60.times do |n|
+10.times do |n|
   name  = Faker::Name.name
   email = "sample-#{n+1}@email.com"
   password = "password"
@@ -43,15 +43,3 @@ Base.create!(base_id: 3,
              attendance: "退勤")
              
 puts "bases created"
-
-MonthApproval.create!(user_id: 1,
-                      approval_superior_id: 1,
-                      approval_status: 1,
-                      approval_month: 1)
-             
-MonthApproval.create!(user_id: 2,
-                      approval_superior_id: 2,
-                      approval_status: 2,
-                      approval_month: 2)
-
-puts "month_approvals created"

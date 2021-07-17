@@ -12,6 +12,8 @@ class CreateAttendances < ActiveRecord::Migration[5.1]
       t.string :overtime_status
       t.integer :indicator_check
       t.boolean :change
+      t.integer :approval_superior_id
+      t.integer :approval_status
       
       t.references :user, foreign_key: true
       t.timestamps

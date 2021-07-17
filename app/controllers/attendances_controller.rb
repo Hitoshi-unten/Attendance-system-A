@@ -75,7 +75,7 @@ class AttendancesController < ApplicationController
   # 残業申請承認モーダル！
   def edit_superior_announcement
     @user = User.find(params[:user_id])
-    @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id).where.not(user_id: @user.id)
+    @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id)
     # @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id).where.not(user_id: @user.id).group_by(&:user_id)
     @users = User.joins(:attendances).group("users.id").where(attendances:{overtime_status: "申請中"}) #joinsでattendancesのURLを持っているuserを集めてる！
   end
@@ -106,13 +106,63 @@ class AttendancesController < ApplicationController
     @last_day = @first_day.end_of_month #end_of_month月末日を計算してくれる。
     @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
     @worked_sum = @attendances.where.not(started_at: nil).count
-  end  
+  end
+
+  # 1ヶ月承認申請
+  def monthly_approval
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
+    params[:attendance][:approval_status] = "申請中"
+    if @attendance.update_attributes(attendances_params)
+      flash[:success] = "残業を申請しました。"
+    else
+      flash[:danger] = "申請をキャンセルしました。"
+    end
+    redirect_to user_url(@user)
+  end
   
+  # 1ヶ月承認申請（上長モーダル表示）
+  def edit_monthly_approval
+    @user = User.find(params[:user_id])
+    @attendances = Attendance.where(month_approval_status: "申請中", instructor_confirmation: @user.id)
+    @users = User.joins(:attendances).group("users.id").where(attendances:{month_approval_status: "申請中"}) #joinsでattendancesのURLを持っているuserを集めてる！
+  end
+  
+  # 1ヶ月承認申請（上長モーダル承認）
+  def update_monthly_approval
+    ActiveRecord::Base.transaction do
+      @month_approval_status = Attendance.where(month_approval_status: "申請中").count
+      @month_approval_status1 = Attendance.where(month_approval_status: "承認").count
+      @month_approval_status2 = Attendance.where(month_approval_status: "否認").count
+      @month_approval_status3 = Attendance.where(month_approval_status: "なし").count
+      @user = User.find(params[:user_id])
+      reply_month_approval_params.each do |id, item|
+        attendance = Attendance.find(id)
+        attendance.update_attributes!(item) #(id, item)
+      end
+    end
+    flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
+    redirect_to user_url(@user)
+  rescue ActiveRecord::RecordInvalid
+    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+    redirect_to user_url(@user)
+  end
+
   private
   
     # 1ヶ月分の勤怠情報を扱います。
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+    end
+    
+    # 1ヶ月分勤怠情報を扱う
+    def month_approval_params
+      params.require(:attendance).permit(:finish_overtime, :next_day, :work_content, :instructor_confirmation, :overtime_status)
+    end
+    
+    # 1ヶ月分勤怠情報承認を扱う
+    def reply_month_approval_params
+      params.require(:user).permit(attendances: [:indicator_check, :change])[:attendances]
     end
     
     # 残業情報を扱う
