@@ -23,20 +23,20 @@
               <td><%= $days_of_the_week[day.worked_on.wday] %></td>
               <% if (Date.current < day.worked_on) %>
               <!--勤怠オブジェクトが当日から判断して翌日以降-->
-                <td><%= attendance.time_field :started_at, readonly: true, class: "form-control" %></td>
-                <td><%= attendance.time_field :finished_at, readonly: true, class: "form-control" %></td>
+                <td><%= attendance.time_field :edit_started_at, readonly: true, class: "form-control" %></td>
+                <td><%= attendance.time_field :edit_finished_at, readonly: true, class: "form-control" %></td>
               <% else %>
-                <td><%= attendance.time_field :started_at, class: "form-control" %></td>
-                <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
+                <td><%= attendance.time_field :edit_started_at, class: "form-control" %></td>
+                <td><%= attendance.time_field :edit_finished_at, class: "form-control" %></td>
               <% end %>
+              <td><%= attendance.check_box :edit_next_day, {}, "true", "false" %></td>
               <td>
-                <% if day.started_at.present? && day.finished_at.present? %>
-                  <%= working_times(day.started_at, day.finished_at) %>
+                <% if day.edit_started_at.present? && day.edit_finished_at.present? %>
+                  <%= working_times(day.edit_started_at, day.edit_finished_at) %>
                 <% end %>
               </td>
-              <td></td>
               <td><%= attendance.text_field :note, class: "form-control" %></td>
-              <td></td>
+              <td><%= attendance.collection_select :edit_superior, @superiors, :id, :name, include_blank: true, class: "form-control", required: true %></td>
             </tr>
           <% end %>
         <% end %>
@@ -45,7 +45,7 @@
   </div>
   
   <div class="center">
-    <%= f.submit "まとめて更新", class: "btn btn-lg btn-primary" %>
+    <%= f.submit "編集を保存する", class: "btn btn-lg btn-primary" %>
     <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-default" %>
   </div>
 <% end %>

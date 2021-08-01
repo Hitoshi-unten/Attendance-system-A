@@ -1,0 +1,43 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <div class="modal-body">
+        <%= form_with(model: @user, url: update_monthly_approval_user_attendances_path(@user), local: true, method: :patch) do |f| %>
+          <% @attendances.each do |user_id, attendances| %>
+        <!--フォームを追加するのにRailsではform_withというヘルパーメソッドを使う。このメソッドはActive Recordのオブジェクトを取り込み、さらにそのオブジェクトの属性（カラム）を使ってフォームを自動的に構築してくれる便利なもの。-->
+          <table class="table table-bordered table-striped overwork-application__table">
+            <h2 class="modal-title">【<%= User.find(user_id).name %>からの1ヶ月分勤怠申請】</h2>
+            <thead>
+              <tr>
+                <th>月</th>
+                <th>指示者確認印</th>
+                <th>変更</th>
+                <th>勤怠を確認する</th>
+              </tr>
+            </thead>
+            <% attendances.each do |attendance| %>
+              <%= f.fields_for "attendances[]", attendance do |at| %>
+                <tbody>
+                  <tr>
+                    <!--月-->
+                    <td><%= l(attendance.worked_on, format: :month) %></td>                      
+                    <!--指示者確認印-->
+                    <td><%= at.select :indicator_check, {'なし':1, '申請中':2, '承認':3, '否認':4}, { class: 'form-control input-sm', required: true } %></td>
+                    <!--ビューファイルのフォームでrequired: trueを書くと、空で送信することを防げる-->
+                    <td><%= at.check_box :change, {}, "true", "false" %></td>
+                    <td><%= link_to "確認", applicant_confirmation_user_path(user_id), local: true, class: "btn btn-primary" %></td>
+                  </tr>
+                </tbody>
+              <% end %>
+            <% end %>
+          </table>
+          <% end %>
+         <%= f.submit "変更を送信する", class: "btn-btn-primary" %> 
+       </div>
+      <% end %>
+    </div>
+  </div>  
+</div>

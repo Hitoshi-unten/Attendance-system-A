@@ -1,28 +1,20 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :applicant_confirmation]
+  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :applicant_confirmation]
   # このように記述することで、editとupdateアクションが実行される直前にlogged_in_userメソッドが実行されるようになる。
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
   # 【admin_user】＝「管理者は遷移可」
   before_action :admin_or_correct_user, only: [:show, :update, :edit_one_month, :update_one_month]
   # 【admin_or_correct_user】＝「管理者は遷移可」または「遷移したいページが現在ログインしているユーザー自身のページだった場合遷移可」というメソッド。
-  before_action :set_one_month, only: :show
+  before_action :set_one_month, only: [:show, :applicant_confirmation]
   # before_action :メソッド名〜と記述することで、全てのアクションが実行される直前に、ここで指定したアクションが実行されることとなる。
   # set_userを指定しているのでbefore_actionメソッドは同じコントローラ内にあるset_userを実行するという流れ。
   # その結果、全アクションでまずは #@current_userを定義しようとし、@current_userが存在すればログイン状態、nilならログアウト状態ということがわかるようになります。
   # onlyオプションで実行したいアクションのみ記述することができる。
 
   def index #(一覧画面)
-    @users = User.all
-    # if params[:name].present?
-    #   @users = @users.get_by_name params[:name]
-    # end
-    # if params[:id].present?
-    #   @user = User.find_by(id: @users.id)
-    # else
-    #   @user = User.new
-    # end
+    @users = User.all # 全てのユーザーを表示するため、全ユーザーが代入されたインスタンス変数を定義して代入している。定義したインスタンス変数名は全てのユーザーを代入した複数形であるため@usersとしている。
   end
   
   def import
@@ -32,17 +24,14 @@ class UsersController < ApplicationController
     redirect_to users_path 
   end
     
-    # 全てのユーザーを表示するため、全ユーザーが代入されたインスタンス変数を定義して代入している。定義したインスタンス変数名は全てのユーザーを代入した複数形であるため@usersとしている。
-
-  def show
+  def show # (特定の投稿を表示する画面)
     if current_user.admin?
       redirect_to users_url
     end
-    # (特定の投稿を表示する画面)
     # countメソッドは配列の要素数を取得することができる。今回はwhere.notを用いて、記述している。
     @worked_sum = @attendances.where.not(started_at: nil).count #「１ヶ月分の勤怠データの中で、出勤時間が何もない状態ではないものの数を代入」
     # @overwork_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name).count #残業申請のお知らせの件数
-    @superior_users = User.where(superior: true).where.not(user_id: @user.id)
+    @superior_users = User.where(superior: true).where.not(id: @user.id)
     # @overwork_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name).count #残業申請のお知らせの件数
   end
 
@@ -103,18 +92,12 @@ class UsersController < ApplicationController
   
   def list_of_employees
     @in_working_users = User.in_working_users
-    # @users = User.includes(:attendances).where("attendances.started_at.present && attendances.finished_at.nil", Date.today).references(:attendances)
   end
-    # @user = @attendances.where.not(started_at: nil) # 「１ヶ月分の勤怠データの中で、出勤時間が何もない状態ではないものの数を代入」
-    # @users = User.where(worked_on:'',:'').order('')
-    # where 出勤中の社員を取り出す。whereは複数件の条件のあったものを取り出す。find、find_byと合わせて覚えておく。@インスタンス変数を使う。
-    # @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
-    # @worked_sum = @attendances.where.not(started_at: nil).count
-
+  
   def edit_overwork_request
     @user = User.find(params[:user_id]) #上記レコードのuser_idをもとにユーザー情報を探してくる
     @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
-    @superiors = User.where(superior: true).where.not(id: @user.id) #上長は２名いるので@superiorsと複数形にする。superiorがtrueなのは上長だけなのでそのまま条件式にする。複数取り出すためにwhereメソッドを使用。idが自分のidではない=where.not(id:@user.id)
+    @superiors = User.where(superior: true).where.not(id: @user.id) #上長は２名いるので@superiorsと複数形にする。superiorがtrueなのは上長だけなのでそのまま条件式にする。複数取り出すためにwhereメソッドを使用。idが自分のidではない=where.not(id:@user.id)   # where 出勤中の社員を取り出す。whereは複数件の条件のあったものを取り出す。find、find_byと合わせて覚えておく。@インスタンス変数を使う。 
   end
 
   def update_overwork_request
@@ -126,6 +109,10 @@ class UsersController < ApplicationController
       flash[:danger] = "申請をキャンセルしました。"
     end
     redirect_to user_url(@user)
+  end
+
+  # 上長が申請者の勤怠を確認（勤怠を確認する 確認ボタン）
+  def applicant_confirmation
   end
 
   private

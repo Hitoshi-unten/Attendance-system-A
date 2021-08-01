@@ -25,7 +25,7 @@ module AttendancesHelper
   end
   
    def over_times(scheduled_end_time, designated_work_end_time, next_day)
-     if next_day == true
+     if next_day == true # if is_next_dayの書き方の方がエンジニアらしい書き方、next_dayがTrue.ClassかFalse.Classか判定するから==trueと書かなくていい。
        format("%.2f", ((scheduled_end_time.hour - designated_work_end_time.hour) + ((scheduled_end_time.min - designated_work_end_time.min) / 60.0)) + 24)
      else
        format("%.2f", ((scheduled_end_time.hour - designated_work_end_time.hour) + ((scheduled_end_time.min - designated_work_end_time.min) / 60.0)))

@@ -5,30 +5,39 @@
         <span aria-hidden="true">&times;</span>
       </button>
       <div class="modal-body">
-        <%= form_with(model: @user, url: update_superior_announcement_user_attendances_path(@user), local: true, method: :patch) do |f| %>
-          <!--< %= render 'shared/error_messages', object: @attedance %>-->
+        <%= form_with(model: @user, url: update_working_hours_approval_user_attendances_path(@user), local: true, method: :patch) do |f| %>
           <% @attendances.each do |user_id, attendances| %>
         <!--フォームを追加するのにRailsではform_withというヘルパーメソッドを使う。このメソッドはActive Recordのオブジェクトを取り込み、さらにそのオブジェクトの属性（カラム）を使ってフォームを自動的に構築してくれる便利なもの。-->
           <table class="table table-bordered table-striped overwork-application__table">
-            <h2 class="modal-title">【<%= User.find(user_id).name %>からの残業申請】</h2>
+            <h2 class="modal-title">【<%= User.find(user_id).name %>からの勤怠変更申請】</h2>
             <thead>
               <tr>
-                <th>日付</th>
-                <th>曜日</th>
-                <th>終了予定時間</th>
-                <th>指定勤務終了時間</th>
-                <th>時間外時間</th>
-                <th>業務処理内容</th>
-                <th>指示者確認印</th>
-                  <!--<div class="maru size_small black">-->
-                  <!-- <div class="letter3">印</div> -->
-                  <!--</div>-->
-                <th>変更</th>
-                <th>勤怠を確認する</th>
+                <th rowspan="3">日付</th>
+                <th rowspan="3">曜日</th>
+                <th colspan="4">変更前</th>
+                <th colspan="4">変更後</th>
+                <th rowspan="3">備考</th>
+                <th rowspan="3">指示者確認印</th>
+                <th rowspan="3">変更</th>
+                <th rowspan="3">勤怠を確認する</th>
+              </tr>
+              <tr>
+                <th colspan="2">出社</th>
+                <th colspan="2">退社</th>
+                <th colspan="2">出社</th>
+                <th colspan="2">退社</th>
+              </tr>
+              <tr>
+                <th>時</th>
+                <th>分</th>
+                <th>時</th>
+                <th>分</th>
+                <th>時</th>
+                <th>分</th>
+                <th>時</th>
+                <th>分</th>
               </tr>
             </thead>
-            <!--< % @attendances = @attendances.where(user_id: user.id) %>-->
-            <!--< % @attendances.where(user_id: user.id) %>-->
             <% attendances.each do |attendance| %>
               <%= f.fields_for "attendances[]", attendance do |at| %>
                 <tbody>
@@ -37,17 +46,15 @@
                     <td><%= l(attendance.worked_on, format: :short) %></td>
                     <!--曜日-->
                     <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
-                    <!--終了予定時間-->
-                    <td><%= attendance.finish_overtime.strftime("%H:%M") %></td>
-                    <!--指定勤務終了時間-->
-                    <td><%= User.find_by(id: attendance.user_id).designated_work_end_time.strftime("%H:%M") %></td>
-                    <!--時間外時間-->
-                    <td>
-                      <% if attendance.finish_overtime.present? && User.find_by(id: attendance.user_id).designated_work_end_time.present? %>
-                        <%= str_times = over_times(attendance.finish_overtime.floor_to(15.minutes), User.find_by(id: attendance.user_id).designated_work_end_time.floor_to(15.minutes), attendance.next_day) %>
-                      <% end %>
-                    </td><!--<td>< %= Time.at(t2).utc.strftime("%H:%M")%></td>-->
-                    <!--業務処理内容-->
+                    <!--出社時-->
+                    <td><%= attendance.edited_started_at.strftime("%H") %></td>
+                    <!--出社分-->
+                    <td><%= attendance.edited_started_at.strftime("%M") %></td>
+                    <!--退社時-->
+                    <td><%= attendance.edited_finished_at.strftime("%H") %></td>
+                    <!--退社分-->
+                    <td><%= attendance.edited_finished_at.strftime("%M") %></td>
+                    <!--備考-->
                     <td><%= attendance.work_content %></td>
                     <!--指示者確認印-->
                     <td><%= at.select :indicator_check, {'なし':1, '申請中':2, '承認':3, '否認':4}, { class: 'form-control input-sm', required: true } %></td>

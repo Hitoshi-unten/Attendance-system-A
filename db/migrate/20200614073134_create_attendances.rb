@@ -8,13 +8,17 @@ class CreateAttendances < ActiveRecord::Migration[5.1]
       t.datetime :finish_overtime
       t.boolean :next_day
       t.string :work_content
-      t.string :instructor_confirmation
+      t.integer :instructor_confirmation
       t.string :overtime_status
       t.integer :indicator_check
       t.boolean :change
       t.integer :approval_superior_id
-      t.integer :approval_status
-      
+      t.string :approval_status
+      t.string :edit_status
+      t.datetime :edit_started_at
+      t.datetime :edit_finished_at
+      t.integer :edit_superior
+      t.boolean :edit_next_day
       t.references :user, foreign_key: true
       t.timestamps
     end

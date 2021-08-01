@@ -4,10 +4,7 @@
   <table class="table table-bordered user-table">
     <tr>
       <td>
-        <!--ページ内にボタンを配置し、前月分、次月分へ表示切り替えできる機能を追加する。--><!--手法としては、link_toヘルパーメソッドにパラメーターを追加で渡し、パラメーターの有無によりページに表示する１ヶ月分の情報を判断する。--><!--下記のように記述することで、paramsハッシュにdateキーを含めることができる。--><!--idに関してはuser_pathによりRailsが自動的に判断して追加してくれる。--><!--値には@first_day.prev_monthを指定している。prev_monthは対象のDateオブジェクトの１ヶ月前の状態を返す。つまり前月の日付情報をパラメーターで渡せるということでこれが次月の情報の場合はnext_monthを使用する--><!--この拡張により、params[:date]から表示したい１ヶ月の情報を取り出せるようになった。-->
-        <%= link_to "⇦︎︎︎", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-left" %>
         <%= l(@first_day, format: :middle) %>   時間管理表
-        <%= link_to "︎︎︎⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-right" %>
       </td>
       <td>
           指定勤務開始時間：<%= format_basic_info(@user.designated_work_start_time) %><br>
@@ -27,22 +24,6 @@
       <td>締め：<%= l(@last_day, format: :short) %></td>
     </tr>
   </table>  
-</div>
-
-<div>
-  <ul class="list-unstyled">
-  <% if current_user.superior %>
-    <%= link_to "【所属長承認申請のお知らせ】", edit_monthly_approval_user_attendances_path(@user), remote: true %>
-    <%= link_to "【勤怠変更申請のお知らせ】", edit_working_hours_approval_user_attendances_path(@user), remote: true %><br>
-    <%= link_to "【残業申請のお知らせ】", edit_superior_announcement_user_attendances_path(@user), remote: true %>
-  <% end %>
-  </ul>
-</div>
-
-<div class="btn-users-show">
-  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
-  <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %><br>
-  <%= link_to "勤怠修正ログ（承認済）", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
 </div>
 
 <div>
@@ -84,19 +65,9 @@
       <% @attendances.each do |day| %>
         <tr>
           <!--文法< %= link_to[リンクの名前],[URLまたはルーティングヘルパー] %>-->
-          <td><%= link_to "残業申請", edit_overwork_request_user_attendance_path(@user, day), remote: :true, class: "btn btn-primary" %></td>
+          <td></td>
           <td><%= l(day.worked_on, format: :short) %></td> <!--２つめの引数にformat: :〜と記述することで、指定のフォーマットを指定できる。-->
-          <td>
-            <!--wdayメソッドを使うことで、何番目（日曜から始まり0から数える）の曜日か確認できる。--><!--日0月1火2水3木4金5土6--><!--グローバル変数は極端に言うとプログラムのどこからでも呼び出すことができる変数で$変数名のように$を用いて表現する。-->
-            <% if day.worked_on.wday == 6 %>
-               <font color="Blue"><%= $days_of_the_week[day.worked_on.wday] %></font>
-            <% elsif day.worked_on.wday == 0 %>
-               <font color="Red"><%= $days_of_the_week[day.worked_on.wday] %></font>
-            <% else %>
-               <%= $days_of_the_week[day.worked_on.wday] %>
-            <% end %>
-            <!--後置きのifによって、started_atの値が存在する場合のみ表示できるよう制御している。-->
-          </td>
+          <td><%= $days_of_the_week[day.worked_on.wday] %></td>
           <td><%= format_hour(day.started_at) if day.started_at.present? %></td> 
           <td><%= format_min(day.started_at)  if day.started_at.present? %></td>
           <td>
@@ -121,40 +92,11 @@
           <!--Time#strftimeは、Timeオブジェクトの表示形式を指定して文字列に変換する。TimeはRubyの組み込みオブジェクト。strftime(format) -> String 時刻をformat文字列に従って文字列に変換した結果を返す。%H:24時間制の時(00-23)、%M:分(00-59)-->
           <td></td>
           <td><%= day.work_content %></td>
-          <td>
-            <%= User.find(day.instructor_confirmation).name if day.instructor_confirmation.present? %>
-            <%= "へ" if day.overtime_status == "申請中" %>
-            <%= day.overtime_status %>
-          </td>
+          <td></td>
       <% end %>
     </tbody>
 
     <tfoot>
-      <!--勤怠表にフッター部分を追加する。フッターとは、Webページなどにおいて各ページの下部に定形の情報を表示するための領域のこと。勤怠表の一番下に追加情報表示領域を作ろうというもの。--><!--表示領域には、・１ヶ月分の合計日数、・出勤した日付だけのwork_time（勤務時間）累計、・在社時間の累計 以上を表記する。-->
-      <!--rowspan:縦結合、colspan：横結合-->
-      <tr>
-        <td></td>
-        <td colspan="2"></td>
-        <td colspan="6"></td>
-        <td></td>
-        <td colspan="5"></td>
-        <td>所属長承認
-          <%= form_with(model: @attendances, url: monthly_approval_user_attendances_path(@user), local:true, method: :patch) do |f| %> <!--form_withメソッドは新規オブジェクトならPOSTリクエスト、既存オブジェクトならPATCHリクエストが送信される。-->
-            <%= f.collection_select :approval_superior_id, @superior_users, :id, :name, { prompt: "選択してください" } %> <!--f.collection_select:保存先のカラム名, テーブル名, 実際にDBに保存させるカラム名, 選択肢に用いるカラム名-->
-            <%= f.hidden_field :approval_month, :value => @first_day %>
-            <%= f.submit "申請", class: "btn btn-md btn-primary btn-block btn-approval" %>
-          <% end %>
-        </td>
-      </tr>
     </tfoot>
   </table>
 </div>
-
-<!--モーダル呼び出し 残業申請-->
-<div id="edit-overwork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-<!--モーダル呼び出し 残業申請の承認-->
-<div id="edit-superior-announcement" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-<!--モーダル呼び出し 1ヶ月承認申請-->
-<div id="edit-monthly-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-<!--モーダル呼び出し 勤怠変更申請-->
-<div id="edit-working-hours-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
