@@ -34,19 +34,35 @@ class AttendancesController < ApplicationController
   end
   
   def update_one_month
-    debugger
     # トランザクション（例外処理）を開始。
     ActiveRecord::Base.transaction do
     # データベースの操作を保証したい処理をここに記述する。
-      attendances_params.each do |id, item|
-        attendance = Attendance.find(id)
-        if item[:edit_started_at].present? && item[:edit_finished_at].blank?
-          flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
-          redirect_to attendances_edit_one_month_user_url(@user) and return
+      attendances_params.each do |id, item| #attendanceをeachしてidとitemって分ける、idのところに32とか33とか34が入ってくる、itemのところにedit_started_atとかのいくつかの項目が入ってくる。ただし、itemはここで定義した項目ではなくて、attendance_paramsのストロングパラメーターで定義した項目がある、あそこで定義した項目がitemになる。
+        # if item[:edit_superior].blank?
+            # if item[:edit_started_at].present? || item[:edit_finished_at].present? || item[:note].present?
+            #   flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+            #   redirect_to attendances_edit_one_month_user_url(@user) and return
+            # end
+          if item[:edit_superior].present?
+            if item[:edit_started_at].present? && item[:edit_finished_at].blank?
+              flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+              redirect_to attendances_edit_one_month_user_url(@user) and return
+            elsif item[:edit_started_at].blank? && item[:edit_finished_at].present?
+              flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+              redirect_to attendances_edit_one_month_user_url(@user) and return
+            elsif (item[:edit_next_day] == "false") && (item[:edit_started_at] > item[:edit_finished_at])
+              flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+              redirect_to attendances_edit_one_month_user_url(@user) and return
+            elsif item[:note].blank?
+              flash[:danger] = "備考欄の入力がなかった為、更新をキャンセルしました。"
+              redirect_to attendances_edit_one_month_user_url(@user) and return 
+            end
+            item[:edit_status] = "申請中"
+            attendance = Attendance.find(id)
+            attendance.update!(item)
+          end
         end
-        attendance.update!(item)
       end
-    end
     # トランザクションによる例外処理の分岐になる。
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
     redirect_to user_url(@user)
@@ -67,12 +83,12 @@ class AttendancesController < ApplicationController
   def update_overwork_request
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
-    # @attendance = @user.attendances.find(params[:attendance_id])
     params[:attendance][:overtime_status] = "申請中"
-    if @attendance.update_attributes(overtime_params)
-      flash[:success] = "残業を申請しました。"
-    else
+    # @attendance = @user.attendances.find(params[:attendance_id])
+    if (params[:attendance]["finish_overtime(4i)"].blank?) || (params[:attendance]["finish_overtime(5i)"].blank?) || (params[:attendance][:work_content].blank?) || (params[:attendance][:instructor_confirmation].blank?)
       flash[:danger] = "申請をキャンセルしました。"
+    elsif @attendance.update_attributes(overtime_params)
+      flash[:success] = "残業を申請しました。"
     end
     redirect_to user_url(@user)
   end
@@ -119,10 +135,10 @@ class AttendancesController < ApplicationController
     @user = User.find(params[:user_id])
     @attendance = @user.attendances.find_by(worked_on: params[:attendance][:approval_month])
     params[:attendance][:approval_status] = "申請中"
-    if @attendance.update_attributes(month_approval_params)
-      flash[:success] = "1ヶ月分の勤怠情報を申請しました。"
-    else
+    if month_approval_params[:approval_superior_id].blank?
       flash[:danger] = "申請をキャンセルしました。"
+    elsif @attendance.update_attributes(month_approval_params)
+      flash[:success] = "1ヶ月分の勤怠情報を申請しました。"
     end
     redirect_to user_url(@user)
   end

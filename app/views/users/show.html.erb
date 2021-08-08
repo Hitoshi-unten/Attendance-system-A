@@ -31,10 +31,48 @@
 
 <div>
   <ul class="list-unstyled">
-  <% if current_user.superior %>
-    <%= link_to "【所属長承認申請のお知らせ】", edit_monthly_approval_user_attendances_path(@user), remote: true %>
-    <%= link_to "【勤怠変更申請のお知らせ】", edit_working_hours_approval_user_attendances_path(@user), remote: true %><br>
-    <%= link_to "【残業申請のお知らせ】", edit_superior_announcement_user_attendances_path(@user), remote: true %>
+  <!--上長で（自分かどうか）&未承認だったら申請のお知らせの表示・未承認のものがあれば文字は赤色-->
+  <% if current_user?(@user) %>
+    <% if current_user.superior %>
+      <% unless @monthly_approval_count == nil %>
+        <% if @monthly_approval_count > 0 %>
+          <div class="border border-danger text text-danger">
+            <%= link_to "【所属長承認申請のお知らせ】", edit_monthly_approval_user_attendances_path(@user), remote: true, class: 'text text-danger' %>
+              <div id = "monthly-approval-form-modal" class = "modal fade" tabindex = "-1" role = "dialog" aria-hidden = "true"></div>
+              <!-- 所属長承認の件数をカウントする-->
+              <%= @monthly_approval_count %>件のお知らせがあります
+          </div>
+        <% else %>
+          <p>【所属長承認申請のお知らせ】</p>
+        <% end %>
+      <% end %>
+
+      <% unless @edit_working_hours_approval_count == nil %>
+        <% if @edit_working_hours_approval_count > 0 %>
+          <div class="border border-danger text text-danger">
+            <%= link_to "【勤怠変更申請のお知らせ】", edit_working_hours_approval_user_attendances_path(@user), remote: true, class: 'text text-danger' %>
+              <div id = "edit_working_hours_approval-form-modal" class = "modal fade" tabindex = "-1" role = "dialog" aria-hidden = "true"></div>
+              <!-- 勤怠変更申請の件数をカウントする-->
+              <%= @edit_working_hours_approval_count %>件のお知らせがあります
+          </div>
+        <% else %>
+          <p>【勤怠変更申請のお知らせ】</p>
+        <% end %>
+      <% end %>
+
+      <% unless @edit_superior_announcement_count == nil %>
+        <% if @edit_superior_announcement_count > 0 %>
+          <div class="border border-danger text text-danger">
+            <%= link_to "【残業申請のお知らせ】", edit_superior_announcement_user_attendances_path(@user), remote: true, class: 'text text-danger' %>
+              <div id = "edit_working_hours_approval-form-modal" class = "modal fade" tabindex = "-1" role = "dialog" aria-hidden = "true"></div>
+              <!-- 勤怠変更申請の件数をカウントする-->
+              <%= @edit_superior_announcement_count %>件のお知らせがあります
+          </div>
+        <% else %>
+          <p>【残業申請のお知らせ】</p><br>
+        <% end %>
+      <% end %>  
+    <% end %>
   <% end %>
   </ul>
 </div>

@@ -36,7 +36,7 @@
                 <% end %>
               </td>
               <td><%= attendance.text_field :note, class: "form-control" %></td>
-              <td><%= attendance.collection_select :edit_superior, @superiors, :id, :name, include_blank: true, class: "form-control", required: true %></td>
+              <td><%= attendance.collection_select :edit_superior, @superiors, :id, :name, selected: 1, include_blank: true, class: "form-control", required: true %></td>
             </tr>
           <% end %>
         <% end %>

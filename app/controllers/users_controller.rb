@@ -30,9 +30,14 @@ class UsersController < ApplicationController
     end
     # countメソッドは配列の要素数を取得することができる。今回はwhere.notを用いて、記述している。
     @worked_sum = @attendances.where.not(started_at: nil).count #「１ヶ月分の勤怠データの中で、出勤時間が何もない状態ではないものの数を代入」
-    # @overwork_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name).count #残業申請のお知らせの件数
     @superior_users = User.where(superior: true).where.not(id: @user.id)
-    # @overwork_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.name).count #残業申請のお知らせの件数
+    # 上長 申請中をカウントして赤字で表示する
+    # 上長 自身宛ての申請があり、かつステータスが申請中の時、その数をカウントする
+    if @user.superior?
+      @edit_superior_announcement_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id).count #残業申請のお知らせの件数
+      @monthly_approval_count = Attendance.where(approval_status: "申請中", approval_superior_id: @user.id).count #所属長承認申請のお知らせの件数
+      @edit_working_hours_approval_count = Attendance.where(edit_status: "申請中", edit_superior: @user.id).count #勤怠変更申請のお知らせの件数
+    end
   end
 
   def new # (投稿の新規作成画面)

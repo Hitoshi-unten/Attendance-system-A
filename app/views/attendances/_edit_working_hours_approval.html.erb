@@ -47,13 +47,13 @@
                     <!--曜日-->
                     <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
                     <!--出社時-->
-                    <td><%= attendance.edited_started_at.strftime("%H") %></td>
+                    <td><%= attendance.edit_started_at.strftime("%H") %></td>
                     <!--出社分-->
-                    <td><%= attendance.edited_started_at.strftime("%M") %></td>
+                    <td><%= attendance.edit_started_at.strftime("%M") %></td>
                     <!--退社時-->
-                    <td><%= attendance.edited_finished_at.strftime("%H") %></td>
+                    <td><%= attendance.edit_finished_at.strftime("%H") %></td>
                     <!--退社分-->
-                    <td><%= attendance.edited_finished_at.strftime("%M") %></td>
+                    <td><%= attendance.edit_finished_at.strftime("%M") %></td>
                     <!--備考-->
                     <td><%= attendance.work_content %></td>
                     <!--指示者確認印-->

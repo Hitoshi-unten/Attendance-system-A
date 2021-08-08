@@ -11,10 +11,10 @@ class Attendance < ApplicationRecord
 
   # 出勤・退勤時間どちらも存在する時、出勤時間より早い退勤時間は無効
   validate :started_at_than_finished_at_fast_if_invalid
+
+  # validate :started_at_and_finished_at, on: :update_one_month
   
-  validate :started_at_and_finished_at, on: :update_one_month
-  
-  validate :finished_at_is_invalid_without_a_finished_at, on: :invalid_finished_at
+  # validate :finished_at_is_invalid_without_a_finished_at, on: :invalid_finished_at
   
  # blank?は対象がnil "" " " [] {}のいずれかでtrueを返す。# present?はその逆（値が存在する場合）にtrueを返す。# &&は左右どちらもtrueの時、trueを返す。（true && falseやfalse && trueやfalse && falseの場合はfalseを返す）
  
