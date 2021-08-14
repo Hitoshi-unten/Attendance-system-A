@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  require 'csv'
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :applicant_confirmation]
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :applicant_confirmation]
   # このように記述することで、editとupdateアクションが実行される直前にlogged_in_userメソッドが実行されるようになる。
@@ -13,8 +14,9 @@ class UsersController < ApplicationController
   # その結果、全アクションでまずは #@current_userを定義しようとし、@current_userが存在すればログイン状態、nilならログアウト状態ということがわかるようになります。
   # onlyオプションで実行したいアクションのみ記述することができる。
 
-  def index #(一覧画面)
-    @users = User.all # 全てのユーザーを表示するため、全ユーザーが代入されたインスタンス変数を定義して代入している。定義したインスタンス変数名は全てのユーザーを代入した複数形であるため@usersとしている。
+  def index 
+    @users = User.all
+    # @attendances = Attendance.all
   end
   
   def import
@@ -37,6 +39,14 @@ class UsersController < ApplicationController
       @edit_superior_announcement_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id).count #残業申請のお知らせの件数
       @monthly_approval_count = Attendance.where(approval_status: "申請中", approval_superior_id: @user.id).count #所属長承認申請のお知らせの件数
       @edit_working_hours_approval_count = Attendance.where(edit_status: "申請中", edit_superior: @user.id).count #勤怠変更申請のお知らせの件数
+    end
+    
+    respond_to do |format|
+      format.html
+      format.csv do |csv|
+        send_attendances_csv # CSV出力用のカスタムメソッドを呼び出す
+        # send_data render_to_string, filename: "index.csv", type: :csv #csv用の処理
+      end
     end
   end
 
@@ -118,6 +128,43 @@ class UsersController < ApplicationController
 
   # 上長が申請者の勤怠を確認（勤怠を確認する 確認ボタン）
   def applicant_confirmation
+  end
+
+  # 勤怠修正ログ
+  def attendance_log
+    @user = User.find(params[:id])
+    if params["worked_on(1i)"].present? && params["worked_on(2i)"].present? # worked_on(1i)は年　worked_on(2i)は月
+      selected_year_and_month = "#{params["worked_on(1i)"]}/#{params["worked_on(2i)"]}" # "2021/08"
+      @day = DateTime.parse(selected_year_and_month) if selected_year_and_month.present? # @day = Sat, 01 August 2021 00:00:00 +0000
+      @attendances = @user.attendances.where(edit_status: "承認").where(worked_on: @day.all_month) # 承認済みをwhereで絞り込む
+    else
+      @attendances = @user.attendances.where(edit_status: "承認").order("worked_on ASC") #全ての承認済みを日付順で出す
+    end
+  end
+
+  def send_attendances_csv
+    csv_data = CSV.generate do |csv|
+      header = %w(日付 出社時間 退社時間 備考)
+      csv << header
+      @attendances.each do |attendance|
+        values = [
+          l(attendance.worked_on, format: :short),
+          if attendance.started_at.present?
+            l(attendance.started_at, format: :time)
+          else
+            ''  
+          end,
+          if attendance.finished_at.present?  
+            l(attendance.finished_at, format: :time)
+          else
+            ''
+          end,
+          attendance.note
+          ]
+        csv << values
+      end
+    end
+    send_data(csv_data, filename: "勤怠一覧表.csv")
   end
 
   private

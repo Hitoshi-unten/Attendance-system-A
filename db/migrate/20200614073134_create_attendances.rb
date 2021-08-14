@@ -17,6 +17,8 @@ class CreateAttendances < ActiveRecord::Migration[5.1]
       t.string :edit_status
       t.datetime :edit_started_at
       t.datetime :edit_finished_at
+      t.datetime :started_at_before
+      t.datetime :finished_at_before
       t.integer :edit_superior
       t.boolean :edit_next_day
       t.references :user, foreign_key: true

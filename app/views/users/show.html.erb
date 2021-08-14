@@ -79,8 +79,8 @@
 
 <div class="btn-users-show">
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
-  <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %><br>
-  <%= link_to "勤怠修正ログ（承認済）", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
+  <%= link_to "CSV出力", user_path(@user, date: @first_day, format: :csv), class: "btn btn-primary" %><br>
+  <%= link_to "勤怠修正ログ（承認済）", attendance_log_user_path(@user), class: "btn btn-primary" %>
 </div>
 
 <div>
@@ -196,3 +196,5 @@
 <div id="edit-monthly-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <!--モーダル呼び出し 勤怠変更申請-->
 <div id="edit-working-hours-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<!--モーダル呼び出し 勤怠ログ-->
+<div id="attendance-log" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" style="display: block;"></div>

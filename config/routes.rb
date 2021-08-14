@@ -10,12 +10,14 @@ Rails.application.routes.draw do
 
  # アプリケーションに新しくリソースを作成する。ここで言う「リソース」とは、記事、人、動物などのよく似たオブジェクト同士が集まったものを指す。 リソースに対して作成 (create)、読み出し (read)、更新 (update)、削除 (destroy) の4つの操作を行なうことができるようになっており、これらの操作の頭文字を取ってCRUDと呼ぶ。 # Railsのルーティングにはresourcesメソッドがあり、これを用いてRESTリソースへの標準的なルーティングを宣言できる。 # コマンドラインでrails routesコマンドを実行すると、標準的なRESTfulアクションへのルーティングがすべて定義されていることが確認できる。ここで注目なのは、Railsは「users」というリソース名から単数形の「user」を推測し、両者をその意味にそって使い分けているという点。prefix列で単一の項目には単数形のuser、複数項目を扱う場合には複数形のusersが使われているという具合。 # コントローラの内側で定義されたメソッドは、コントローラのアクションになる。このアプリケーションではアクションがuserに対するCRUD操作を担当する。
   resources :bases
-  
+ 
   resources :users do
     member do
       get 'attendances/edit_one_month' # 勤怠編集ページ
       patch 'attendances/update_one_month'  # まとめて更新 # 注目すべきは、コントローラがattendancesと設定されている点。Userリ����ースに含まれるよう設定したが、attendances/...と記述することによってattendances_edit_one_month_user_pathとルーティングの設定を追加することが可能。URLはusers/1/attendances/edit_one_monthと直感的になる。
       get 'applicant_confirmation'
+      get 'attendance_log'
+      patch 'attendance_log'
     end
     
     collection {post :import}
