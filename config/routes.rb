@@ -16,8 +16,7 @@ Rails.application.routes.draw do
       get 'attendances/edit_one_month' # 勤怠編集ページ
       patch 'attendances/update_one_month'  # まとめて更新 # 注目すべきは、コントローラがattendancesと設定されている点。Userリ����ースに含まれるよう設定したが、attendances/...と記述することによってattendances_edit_one_month_user_pathとルーティングの設定を追加することが可能。URLはusers/1/attendances/edit_one_monthと直感的になる。
       get 'applicant_confirmation'
-      get 'attendance_log'
-      patch 'attendance_log'
+      get 'attendances/attendance_log' # 勤怠ログ
     end
     
     collection {post :import}

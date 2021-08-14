@@ -191,6 +191,18 @@ class AttendancesController < ApplicationController
     redirect_to user_url(@user)
   end
 
+  # 勤怠修正ログ
+  def attendance_log
+    @user = User.find(params[:id])
+    if params["worked_on(1i)"].present? && params["worked_on(2i)"].present? # worked_on(1i)は年　worked_on(2i)は月
+      selected_year_and_month = "#{params["worked_on(1i)"]}/#{params["worked_on(2i)"]}" # "2021/08"
+      @day = DateTime.parse(selected_year_and_month) if selected_year_and_month.present? # @day = Sat, 01 August 2021 00:00:00 +0000
+      @attendances = @user.attendances.where(edit_status: "承認").where(worked_on: @day.all_month) # 承認済みをwhereで絞り込む
+    else
+      @attendances = @user.attendances.where(edit_status: "承認").order("worked_on ASC") #全ての承認済みを日付順で出す
+    end
+  end
+  
   private
   
     # 1ヶ月分の勤怠情報を扱います。
