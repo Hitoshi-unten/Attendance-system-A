@@ -50,7 +50,7 @@
                     <!--業務処理内容-->
                     <td><%= attendance.work_content %></td>
                     <!--指示者確認印-->
-                    <td><%= at.select :indicator_check, {'なし':1, '申請中':2, '承認':3, '否認':4}, { class: 'form-control input-sm', required: true } %></td>
+                    <td><%= at.select :indicator_check, ['なし', '申請中', '承認', '否認'], { class: 'form-control input-sm', required: true } %></td>
                     <!--ビューファイルのフォームでrequired: trueを書くと、空で送信することを防げる-->
                     <td><%= at.check_box :change, {}, "true", "false" %></td>
                     <td><%= link_to "確認", applicant_confirmation_user_path(user_id), local: true, class: "btn btn-primary" %></td>

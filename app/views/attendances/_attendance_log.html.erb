@@ -6,12 +6,12 @@
       </button>
       <h1 class="modal-title">勤怠ログ</h1>
       <div class="modal-body">
-        <%= form_with(model: @user, url: attendances_attendance_log_user_path(@user, @attendance), remote: true, method: :get) do |f| %>
+        <%= form_with(model: @user, url: attendance_log_user_attendances_path(@user), remote: true, method: :get) do |f| %>
         <!--フォームを追加するのにRailsではform_withというヘルパーメソッドを使う。このメソッドはActive Recordのオブジェクトを取り込み、さらにそのオブジェクトの属性（カラム）を使ってフォームを自動的に構築してくれる便利なもの。-->
-          <%= f.date_select :worked_on, { use_month_numbers: true, discard_day: true, prompt:["年","月"] }, { class: "form-control" } %>
-          <%= f.submit "検索", class: "btn-btn-md btn-primary" %>
+          <%= f.date_select :worked_on, { use_month_numbers: true, discard_day: true, prompt:["年","月"] }, { class: "form-control", style: "width:auto" } %>
+          <%= f.submit "検索", class: "btn btn-md btn-primary" %>
         <% end %>
-        <table class="table table-bordered table-striped overwork-application__table">
+                <table class="table table-bordered table-striped overwork-application__table">
           <thead>
             <tr>
               <th>日付</th>
@@ -24,16 +24,15 @@
             </tr>
           </thead>
           <% @attendances.each do |attendance| %>
-            <% superior = User.find_by(employee_number: attendance.update_superior_announcement) %>
             <tbody>
               <tr>
-                <td><%= l(@attendance.worked_on, format: :short) %></td>
-                <td><%= l(@attendance.started_at_before, format: :time) if attendance.started_at_before.present? %></td>
-                <td><%= l(@attendance.finished_at_before, format: :time) if attendance.finished_at_before.present? %></td>
-                <td><%= l(@attendance.started_at_edit, format: :time) if attendance.started_at_edit.present? %></td>
-                <td><%= l(@attendance.finished_at_edit, format: :time) if attendance.finished_at_edit.present? %></td>
-                <td><%= superior.name %></td>
-                <td><%= l(attendance.updated_at, format: :custom) if attendance.update_at.present? %></td>
+                <td><%= l(attendance.worked_on, format: :short) %></td>
+                <td><%= l(attendance.started_at_before, format: :time) if attendance.started_at_before.present? %></td>
+                <td><%= l(attendance.finished_at_before, format: :time) if attendance.finished_at_before.present? %></td>
+                <td><%= l(attendance.edit_started_at, format: :time) if attendance.edit_started_at.present? %></td>
+                <td><%= l(attendance.edit_finished_at, format: :time) if attendance.edit_finished_at.present? %></td>
+                <td><%= User.find(attendance.edit_superior).name %></td>
+                <td><%= l(attendance.updated_at, format: :custom) if attendance.updated_at.present? %></td>
               </tr>
             </tbody>
           <% end %>

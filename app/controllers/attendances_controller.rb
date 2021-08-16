@@ -193,12 +193,14 @@ class AttendancesController < ApplicationController
 
   # 勤怠修正ログ
   def attendance_log
-    @user = User.find(params[:id])
+    # (params[:id]) の ID を持つUserを定義
+    @user = User.find(params[:user_id]) # :current_user_idでも拾える
+    # params[:user]["worked_on(1i)"] と params[:user]["worked_on(2i)"] があるときの処理
     if params["worked_on(1i)"].present? && params["worked_on(2i)"].present? # worked_on(1i)は年　worked_on(2i)は月
       selected_year_and_month = "#{params["worked_on(1i)"]}/#{params["worked_on(2i)"]}" # "2021/08"
       @day = DateTime.parse(selected_year_and_month) if selected_year_and_month.present? # @day = Sat, 01 August 2021 00:00:00 +0000
       @attendances = @user.attendances.where(edit_status: "承認").where(worked_on: @day.all_month) # 承認済みをwhereで絞り込む
-    else
+    elsif params["worked_on(1i)"].blank? || params["worked_on(2i)"].blank?
       @attendances = @user.attendances.where(edit_status: "承認").order("worked_on ASC") #全ての承認済みを日付順で出す
     end
   end
@@ -227,17 +229,17 @@ class AttendancesController < ApplicationController
 
     # 残業情報承認を扱う
     def reply_overtime_params
-      params.require(:user).permit(attendances: [:indicator_check, :change])[:attendances]
+      params.require(:user).permit(attendances: [:change, :overtime_status])[:attendances]
     end
     
     # 勤怠変更情報を扱う
     def working_hours_params
-      params.require(:attendance).permit(:work_content, :instructor_confirmation, :working_hours_status)
+      params.require(:attendance).permit(:work_content, :instructor_confirmation, :edit_status)
     end
     
     # 勤怠変更情報承認を扱う
     def reply_working_hours_params
-      params.require(:user).permit(attendances: [:indicator_check, :change])[:attendances]
+      params.require(:user).permit(attendances: [:change, :edit_status])[:attendances]
     end
 
     # beforeフィルター
