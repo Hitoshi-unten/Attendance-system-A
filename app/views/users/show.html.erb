@@ -173,7 +173,7 @@
         <td colspan="6"></td>
         <td></td>
         <td colspan="5"></td>
-        <td>所属長承認
+        <td><%= @status_updated %>
           <%= form_with(model: @attendances, url: monthly_approval_user_attendances_path(@user), local:true, method: :patch) do |f| %> <!--form_withメソッドは新規オブジェクトならPOSTリクエスト、既存オブジェクトならPATCHリクエストが送信される。-->
             <%= f.collection_select :approval_superior_id, @superior_users, :id, :name, { prompt: "選択してください" } %> <!--f.collection_select:保存先のカラム名, テーブル名, 実際にDBに保存させるカラム名, 選択肢に用いるカラム名-->
             <%= f.hidden_field :approval_month, :value => @first_day %>

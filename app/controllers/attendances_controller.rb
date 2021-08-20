@@ -103,18 +103,24 @@ class AttendancesController < ApplicationController
   end
   
   def update_superior_announcement
+    n1 = 0
+    n2 = 0
+    n3 = 0
     ActiveRecord::Base.transaction do
-      @overtime_status = Attendance.where(overtime_status: "申請中").count
-      @overtime_status1 = Attendance.where(overtime_status: "承認").count
-      @overtime_status2 = Attendance.where(overtime_status: "否認").count
-      @overtime_status3 = Attendance.where(overtime_status: "なし").count
       @user = User.find(params[:user_id])
       reply_overtime_params.each do |id, item|
         attendance = Attendance.find(id)
         attendance.update_attributes!(item) #(id, item)
+        if item[:overtime_status] == "承認"
+          n1 += 1
+        elsif item[:overtime_status] == "否認"
+          n2 += 1
+        elsif item[:overtime_status] == "なし"
+          n3 += 1
+        end
       end
     end
-    flash[:success] = "残業申請→申請中を#{@overtime_status}件、承認を#{@overtime_status1}件、否認を#{@overtime_status2}件、なしを#{@overtime_status3}件送信しました。"
+    flash[:success] = "残業申請→承認を#{n1}件、否認を#{n2}件、なしを#{n3}件送信しました。"
     redirect_to user_url(@user)
   rescue ActiveRecord::RecordInvalid
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
@@ -152,15 +158,15 @@ class AttendancesController < ApplicationController
   # 1ヶ月承認申請（上長モーダル承認）
   def update_monthly_approval
     ActiveRecord::Base.transaction do
-      @month_approval_status = Attendance.where(approval_status: "申請中").count
-      @month_approval_status1 = Attendance.where(approval_status: "承認").count
-      @month_approval_status2 = Attendance.where(approval_status: "否認").count
-      @month_approval_status3 = Attendance.where(approval_status: "なし").count
       @user = User.find(params[:user_id])
       reply_month_approval_params.each do |id, item|
         attendance = Attendance.find(id)
         attendance.update_attributes!(item) #(id, item)
       end
+      @month_approval_status = Attendance.where(approval_status: "申請中").count
+      @month_approval_status1 = Attendance.where(approval_status: "承認").count
+      @month_approval_status2 = Attendance.where(approval_status: "否認").count
+      @month_approval_status3 = Attendance.where(approval_status: "なし").count
     end
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
     redirect_to user_url(@user)
@@ -178,11 +184,16 @@ class AttendancesController < ApplicationController
   
   def update_working_hours_approval
     ActiveRecord::Base.transaction do
+      
       @user = User.find(params[:user_id])
       reply_working_hours_params.each do |id, item|
         attendance = Attendance.find(id)
         attendance.update_attributes!(item) #(id, item)
       end
+      @month_approval_status = Attendance.where(approval_status: "申請中").count
+      @month_approval_status1 = Attendance.where(approval_status: "承認").count
+      @month_approval_status2 = Attendance.where(approval_status: "否認").count
+      @month_approval_status3 = Attendance.where(approval_status: "なし").count
     end
     flash[:success] = "勤怠変更申請→申請中を#{@working_hours_status}件、承認を#{@working_hours_status1}件、否認を#{@working_hours_status2}件、なしを#{@working_hours_status3}件送信しました。"
     redirect_to user_url(@user)
@@ -219,7 +230,7 @@ class AttendancesController < ApplicationController
     
     # 1ヶ月分勤怠情報承認を扱う
     def reply_month_approval_params
-      params.require(:user).permit(attendances: [:indicator_check, :change])[:attendances]
+      params.require(:user).permit(attendances: [:approval_status, :change])[:attendances]
     end
     
     # 残業情報を扱う

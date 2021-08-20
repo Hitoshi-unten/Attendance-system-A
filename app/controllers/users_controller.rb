@@ -32,6 +32,7 @@ class UsersController < ApplicationController
     end
     # countメソッドは配列の要素数を取得することができる。今回はwhere.notを用いて、記述している。
     @worked_sum = @attendances.where.not(started_at: nil).count #「１ヶ月分の勤怠データの中で、出勤時間が何もない状態ではないものの数を代入」
+    @attendance = @user.attendances.find_by(worked_on: @first_day)
     @superior_users = User.where(superior: true).where.not(id: @user.id)
     # 上長 申請中をカウントして赤字で表示する
     # 上長 自身宛ての申請があり、かつステータスが申請中の時、その数をカウントする
@@ -39,6 +40,19 @@ class UsersController < ApplicationController
       @edit_superior_announcement_count = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id).count #残業申請のお知らせの件数
       @monthly_approval_count = Attendance.where(approval_status: "申請中", approval_superior_id: @user.id).count #所属長承認申請のお知らせの件数
       @edit_working_hours_approval_count = Attendance.where(edit_status: "申請中", edit_superior: @user.id).count #勤怠変更申請のお知らせの件数
+    end
+
+    # 月初日を取得。
+    # 申請者が1ヶ月申請を押したときに月初日に「申請中」が入る
+    # 上長が「なし」「申請中」「否認」「承認」のどれかを選択することでstatusが変更される
+    @first_day_monthly_request = @user.attendances.find_by(worked_on: @first_day)
+    @name = User.find(@first_day_monthly_request.approval_superior_id).name
+    if @first_day_monthly_request.approval_status == "申請中"
+      @status_updated = "所属長 #{@name}に申請中"
+    elsif @first_day_monthly_request.approval_status == "承認"
+      @status_updated = "所属長承認 #{@name}から承認済"
+    elsif @first_day_monthly_request.approval_status == "否認"
+      @status_updated = "所属長否認 #{@name}から否認済"
     end
     
     respond_to do |format|
