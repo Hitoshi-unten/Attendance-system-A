@@ -44,17 +44,18 @@ class UsersController < ApplicationController
 
     # 月初日を取得。
     # 申請者が1ヶ月申請を押したときに月初日に「申請中」が入る
-    # 上長が「なし」「申請中」「否認」「承認」のどれかを選択することでstatusが変更される
+    # 上長が「承認」「否認」「なし」のどれかを選択することでstatusが変更される
     @first_day_monthly_request = @user.attendances.find_by(worked_on: @first_day)
-    @name = User.find(@first_day_monthly_request.approval_superior_id).name
-    if @first_day_monthly_request.approval_status == "申請中"
-      @status_updated = "所属長 #{@name}に申請中"
-    elsif @first_day_monthly_request.approval_status == "承認"
-      @status_updated = "所属長承認 #{@name}から承認済"
-    elsif @first_day_monthly_request.approval_status == "否認"
-      @status_updated = "所属長否認 #{@name}から否認済"
+    if @first_day_monthly_request.approval_superior_id.present?
+      @name = User.find(@first_day_monthly_request.approval_superior_id).name
+      if @first_day_monthly_request.approval_status == "申請中"
+        @status_updated = "所属長 #{@name}に申請中"
+      elsif @first_day_monthly_request.approval_status == "承認"
+        @status_updated = "所属長承認 #{@name}から承認済"
+      elsif @first_day_monthly_request.approval_status == "否認"
+        @status_updated = "所属長否認 #{@name}から否認済"
+      end
     end
-    
     respond_to do |format|
       format.html
       format.csv do |csv|

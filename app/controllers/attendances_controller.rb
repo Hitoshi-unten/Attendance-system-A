@@ -25,14 +25,16 @@ class AttendancesController < ApplicationController
     end
     redirect_to @user
   end
-  
+
+  # 勤怠編集（編集）
   def edit_one_month
     # URLのidにはattendanceのidが入っている
     @user = User.find(params[:id]) #上記レコードのuser_idをもとにユーザー情報を探してくる
     # @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
     @superiors = User.where(superior: true).where.not(id: @user.id) #上長は２名いるので@superiorsと複数形にする。superiorがtrueなのは上長だけなのでそのまま条件式にする。複数取り出すためにwhereメソッドを使用。idが自分のidではない=where.not(id:@user.id)
   end
-  
+
+  # 勤怠編集（更新）
   def update_one_month
     # トランザクション（例外処理）を開始。
     ActiveRecord::Base.transaction do
@@ -45,16 +47,16 @@ class AttendancesController < ApplicationController
             # end
           if item[:edit_superior].present?
             if item[:edit_started_at].present? && item[:edit_finished_at].blank?
-              flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+              flash[:danger] = "退勤時間の入力がない為、更新をキャンセルしました。"
               redirect_to attendances_edit_one_month_user_url(@user) and return
             elsif item[:edit_started_at].blank? && item[:edit_finished_at].present?
-              flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+              flash[:danger] = "出勤時間の入力がない為、更新をキャンセルしました。"
               redirect_to attendances_edit_one_month_user_url(@user) and return
             elsif (item[:edit_next_day] == "false") && (item[:edit_started_at] > item[:edit_finished_at])
               flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
               redirect_to attendances_edit_one_month_user_url(@user) and return
             elsif item[:note].blank?
-              flash[:danger] = "備考欄の入力がなかった為、更新をキャンセルしました。"
+              flash[:danger] = "備考の入力がない為、更新をキャンセルしました。"
               redirect_to attendances_edit_one_month_user_url(@user) and return 
             end
             item[:edit_status] = "申請中"
@@ -71,7 +73,8 @@ class AttendancesController < ApplicationController
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(@user) and return
   end
-  
+
+  # 残業申請（編集）
   def edit_overwork_request
     # URLのidにはattendanceのidが入っている
     @user = User.find(params[:user_id]) #上記レコードのuser_idをもとにユーザー情報を探してくる
@@ -80,6 +83,7 @@ class AttendancesController < ApplicationController
     @superiors = User.where(superior: true).where.not(id: @user.id) #上長は２名いるので@superiorsと複数形にする。superiorがtrueなのは上長だけなのでそのまま条件式にする。複数取り出すためにwhereメソッドを使用。idが自分のidではない=where.not(id:@user.id)
   end
 
+  # 残業申請（更新）
   def update_overwork_request
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
@@ -93,7 +97,7 @@ class AttendancesController < ApplicationController
     redirect_to user_url(@user)
   end
   
-  # 残業申請承認モーダル
+  # 残業承認申請（上長モーダル表示）
   def edit_superior_announcement
     # ユーザー定義
     @user = User.find(params[:user_id])
@@ -101,7 +105,8 @@ class AttendancesController < ApplicationController
     # @attendances = Attendance.where(overtime_status: "申請中", instructor_confirmation: @user.id).where.not(user_id: @user.id).group_by(&:user_id)
     # @users = User.joins(:attendances).group("users.id").where(attendances:{overtime_status: "申請中"}) #joinsでattendancesのURLを持っているuserを集めてる！
   end
-  
+
+  # 残業承認申請（上長モーダル承認）
   def update_superior_announcement
     n1 = 0
     n2 = 0
@@ -144,7 +149,7 @@ class AttendancesController < ApplicationController
     if month_approval_params[:approval_superior_id].blank?
       flash[:danger] = "申請をキャンセルしました。"
     elsif @attendance.update_attributes(month_approval_params)
-      flash[:success] = "1ヶ月分の勤怠情報を申請しました。"
+      flash[:success] = "#{@user.name}の1ヶ月分の勤怠情報を申請しました。"
     end
     redirect_to user_url(@user)
   end
@@ -161,12 +166,8 @@ class AttendancesController < ApplicationController
       @user = User.find(params[:user_id])
       reply_month_approval_params.each do |id, item|
         attendance = Attendance.find(id)
-        attendance.update_attributes!(item) #(id, item)
+        attendance.update_attributes!(item) #(id, item) 
       end
-      @month_approval_status = Attendance.where(approval_status: "申請中").count
-      @month_approval_status1 = Attendance.where(approval_status: "承認").count
-      @month_approval_status2 = Attendance.where(approval_status: "否認").count
-      @month_approval_status3 = Attendance.where(approval_status: "なし").count
     end
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
     redirect_to user_url(@user)
@@ -175,27 +176,33 @@ class AttendancesController < ApplicationController
     redirect_to user_url(@user)
   end
 
-  # 勤怠変更申請モーダル
+  # 勤怠変更申請モーダル（編集）
   def edit_working_hours_approval
     # ユーザー定義
     @user = User.find(params[:user_id])
     @attendances = Attendance.where(edit_status: "申請中", edit_superior: @user.id).order(:user_id).group_by(&:user_id)
   end
-  
+
+  # 勤怠変更申請モーダル（更新）
   def update_working_hours_approval
+    n1 = 0
+    n2 = 0
+    n3 = 0
     ActiveRecord::Base.transaction do
-      
       @user = User.find(params[:user_id])
       reply_working_hours_params.each do |id, item|
         attendance = Attendance.find(id)
         attendance.update_attributes!(item) #(id, item)
+        if item[:edit_status] == "承認"
+          n1 += 1
+        elsif item[:edit_status] == "否認"
+          n2 += 1 
+        elsif item[:edit_status] == "なし"
+          n3 += 1
+        end
       end
-      @month_approval_status = Attendance.where(approval_status: "申請中").count
-      @month_approval_status1 = Attendance.where(approval_status: "承認").count
-      @month_approval_status2 = Attendance.where(approval_status: "否認").count
-      @month_approval_status3 = Attendance.where(approval_status: "なし").count
     end
-    flash[:success] = "勤怠変更申請→申請中を#{@working_hours_status}件、承認を#{@working_hours_status1}件、否認を#{@working_hours_status2}件、なしを#{@working_hours_status3}件送信しました。"
+    flash[:success] = "勤怠変更申請→承認を#{n1}件、否認を#{n2}件、なしを#{n3}件送信しました。"
     redirect_to user_url(@user)
   rescue ActiveRecord::RecordInvalid
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
@@ -218,7 +225,7 @@ class AttendancesController < ApplicationController
   
   private
   
-    # 1ヶ月分の勤怠情報を扱います。
+    # 1ヶ月分の勤怠編集を扱います。
     def attendances_params
       params.require(:user).permit(attendances: [:edit_started_at, :edit_finished_at, :note, :edit_status, :edit_superior, :edit_next_day])[:attendances]
     end

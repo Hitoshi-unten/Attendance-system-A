@@ -22,7 +22,6 @@ ActiveRecord::Schema.define(version: 20201011072729) do
     t.string "work_content"
     t.integer "instructor_confirmation"
     t.string "overtime_status"
-    t.integer "indicator_check"
     t.boolean "change"
     t.integer "approval_superior_id"
     t.string "approval_status"

@@ -11,8 +11,17 @@ module AttendancesHelper
     return false
   end
   # 勤怠表にある在社時間の項目機能を追加する。# 在社時間は、出勤してから退勤登録するまでの時間を指す。# そしてこの時間を、ページ上部で表示しているような基本情報と同様の書式にて表示する。# 在社時間を求める計算処理を実装していくのにビューに直接計算処理を記述するのではなく出来るだけヘルパーやインスタンス変数を利用してシンプルな記述のビューを心がける。# 今回はAttendancesヘルパーモジュールに、在社時間を計算するworking_timesメソッドを定義する事にする。# 出勤時間と退勤時間を受け取り、在社時間を計算して返します。
+
   def working_times(start, finish) # working_timeメソッドに２つの引数を設定し、受け取った引数を使って時間の計算処理をして値を返す仕組みとなっている。
     format("%.2f", (((finish - start) / 60) / 60.0)) #時間のオブジェクトを計算すると、秒数として結果が出るためこのような計算が成り立つ。計算結果はformatメソッドにより、指定の書式に変換することで最終的な表示結果になる。
+  end
+
+  def edit_working_times(start, finish, edit_next_day) # working_timeメソッドに２つの引数を設定し、受け取った引数を使って時間の計算処理をして値を返す仕組みとなっている。
+    if edit_next_day == true
+      format("%.2f", ((finish.hour - start.hour) + (finish.min - start.min) / 60.0) + 24)
+    else  
+      format("%.2f", ((finish.hour - start.hour) + (finish.min - start.min) / 60.0)) #時間のオブジェクトを計算すると、秒数として結果が出るためこのような計算が成り立つ。計算結果はformatメソッドにより、指定の書式に変換することで最終的な表示結果になる。
+    end
   end
   
   def format_hour(time)
