@@ -102,7 +102,7 @@ class UsersController < ApplicationController
   end
 
 # 「リダイレクトするときは..._urlと指定する」とだけ覚えておく
-  def destroy # (投稿の��除)
+  def destroy # (投稿の削除)
     @user.destroy
     flash[:success] = "#{@user.name}のデータを削除しました。"
     redirect_to users_url
@@ -122,6 +122,9 @@ class UsersController < ApplicationController
   
   def list_of_employees
     @in_working_users = User.in_working_users
+  end
+
+  def basic_info_modification
   end
   
   def edit_overwork_request

@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     collection {post :import}
     collection do
       get 'list_of_employees' # 出勤社員一覧
+      get 'basic_info_modification' # 基本情報の修正
     end
     resources :attendances, only: :update do # AttendanceリソースとしてはupdateアクションのみでOKでonlyオプションを指定することで、updateアクション以外のルーティングを制限できる。
       member do

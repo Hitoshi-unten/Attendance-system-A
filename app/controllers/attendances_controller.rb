@@ -114,14 +114,16 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do
       @user = User.find(params[:user_id])
       reply_overtime_params.each do |id, item|
-        attendance = Attendance.find(id)
-        attendance.update_attributes!(item) #(id, item)
-        if item[:overtime_status] == "承認"
-          n1 += 1
-        elsif item[:overtime_status] == "否認"
-          n2 += 1
-        elsif item[:overtime_status] == "なし"
-          n3 += 1
+        if item[:change] == "true"
+          attendance = Attendance.find(id)
+          attendance.update_attributes!(item) #(id, item)
+          if item[:overtime_status] == "承認"
+            n1 += 1
+          elsif item[:overtime_status] == "否認"
+            n2 += 1
+          elsif item[:overtime_status] == "なし"
+            n3 += 1
+          end
         end
       end
     end
@@ -147,7 +149,7 @@ class AttendancesController < ApplicationController
     @attendance = @user.attendances.find_by(worked_on: params[:attendance][:approval_month])
     params[:attendance][:approval_status] = "申請中"
     if month_approval_params[:approval_superior_id].blank?
-      flash[:danger] = "申請をキャンセルしました。"
+      flash[:danger] = "申請先が選択されていないため申請をキャンセルしました。"
     elsif @attendance.update_attributes(month_approval_params)
       flash[:success] = "#{@user.name}の1ヶ月分の勤怠情報を申請しました。"
     end
@@ -165,8 +167,10 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do
       @user = User.find(params[:user_id])
       reply_month_approval_params.each do |id, item|
-        attendance = Attendance.find(id)
-        attendance.update_attributes!(item) #(id, item) 
+        if item[:change] == "true"
+          attendance = Attendance.find(id)
+          attendance.update_attributes!(item) #(id, item) 
+        end
       end
     end
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
@@ -191,14 +195,16 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do
       @user = User.find(params[:user_id])
       reply_working_hours_params.each do |id, item|
-        attendance = Attendance.find(id)
-        attendance.update_attributes!(item) #(id, item)
-        if item[:edit_status] == "承認"
-          n1 += 1
-        elsif item[:edit_status] == "否認"
-          n2 += 1 
-        elsif item[:edit_status] == "なし"
-          n3 += 1
+        if item[:change] == "true"
+          attendance = Attendance.find(id)
+          attendance.update_attributes!(item) #(id, item)
+          if item[:edit_status] == "承認"
+            n1 += 1
+          elsif item[:edit_status] == "否認"
+            n2 += 1 
+          elsif item[:edit_status] == "なし"
+            n3 += 1
+          end
         end
       end
     end

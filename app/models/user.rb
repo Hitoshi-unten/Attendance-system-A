@@ -1,6 +1,5 @@
 class User < ApplicationRecord # Userクラスが定義されていること、UserクラスはApplicationRecordクラスを継承していることがわかる。この継承の働きによりActive Recordのメソッドが使えるということは覚えておく。  # ファイルにはこれしか書かれていないが、このUserクラスがApplicationRecordクラスを継承していることに注目。これによって基本的なデータベースCRUD (Create、Read、Update、Destroy) 操作やデータのバリデーション（検証: validation）のほか、洗練された検索機能や複数のモデルを互いに関連付ける機能(リレーションシップ) など、きわめて多くの機能をRailsモデルに無償で提供している。# AttendanceモデルからみたUserモデルとの関連性は１対１だがUserモデルからみた場合、その関係は１（user）対多（Attendance）となる。# Attendanceモデルファイルに記述されていたbelong_toとは違った記述が必要になる。has many〜と記述する。また、多数所持するため、複数形（attendances）となっている点もポイント。# 関連性としては、userが親で、attendancesが子という関係になる。
   has_many :attendances, dependent: :destroy # UserモデルがAttendanceモデルに対して、１対多の関連性を示すコード。# dependent: :destroy ユーザーが削除された場合、関連する勤怠データも同時に自動で削除される。この設定の追加で、ユーザーを削除したのに勤怠データがデータベースに取り残されてしまう状態を防げる。
-  has_many :month_approvals, dependent: :destroy
   attr_accessor :remember_token # 「remember_token」という仮想の属性を作成します。
   before_save { self.email = email.downcase }
   validates :name, presence: true, length: { maximum: 50 } #名前（name）カラムに存在性の検証（空の投稿を認めない） すべての記事に名前が存在し、その長さが50字以下であることが保証される。そうでない場合には記事はデータベースに保存されない。Railsには豊富なバリデーション機能があり、存在確認、カラムでの重複確認、フォーマット確認、関連付けられたオブジェクトがあるかどうかの確認などが行える。バリデーション機能が追加されたので、バリデーションをパスしない@userに対して@user.saveを実行するとfalseが返されるようになっている。
@@ -51,7 +50,7 @@ class User < ApplicationRecord # Userクラスが定義されていること、U
   end
   
   def self.import(file) #ここでのself.はUser.を意味する
-    CSV.foreach(file.path, encoding: 'Shift_JIS:UTF-8', headers: true) do |row|
+    CSV.foreach(file.path, encoding: '#{encoding}:UTF-8', headers: true) do |row|
     # IDが見つかれば、レコードを呼び出し、見つかれなければ、新しく作成
       user = find_by(id: row["id"]) || new
     # CSVからデータを取得し、設定する

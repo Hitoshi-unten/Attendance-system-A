@@ -71,9 +71,9 @@
           <td><%= format_hour(day.started_at) if day.started_at.present? %></td> 
           <td><%= format_min(day.started_at)  if day.started_at.present? %></td>
           <td>
-            <% if btn_text = attendance_state(day) %>
-              <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
-            <% end %>
+            <%# < % if btn_text = attendance_state(day) % >
+              < %= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" % >
+            < % end % > %>
             <!--この構文では、まずif文の条件式に記述されているattendance_stateが呼び出される。引数には繰り返し処理中のAttendanceオブジェクトを渡している。このメソッドから３パターンの戻り値が返ってくる。attendances_helper。その戻り値をbtn＿text変数に代入している。こうすることで、処理が実行された時、戻り値の値を使用できる仕組みになっている。-->
           </td>
           <td><%= format_hour(day.finished_at) if day.finished_at.present? %></td>
