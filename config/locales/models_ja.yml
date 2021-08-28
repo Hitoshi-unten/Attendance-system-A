@@ -10,8 +10,8 @@ ja:
           email: メールアドレス
           affiliation: 所属
           employee_number: 社員番号
-          uid: ユーザーID
-          basic_work_time: 基本勤務時間
+          uid: カードID
+          basic_work_time: 基本時間
           designated_work_start_time: 指定勤務開始時間
           designated_work_end_time: 指定勤務終了時間
           superior: 上長
